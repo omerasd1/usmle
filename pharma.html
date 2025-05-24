@@ -1,0 +1,1441 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>USMLE Step 1 Pharmacology Tool</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+        }
+        /* Custom scrollbar for webkit browsers */
+        ::-webkit-scrollbar {
+            width: 8px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #f1f1f1;
+            border-radius: 10px;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #888;
+            border-radius: 10px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: #555;
+        }
+        .sidebar-item {
+            transition: background-color 0.2s ease-in-out, color 0.2s ease-in-out;
+        }
+        .sidebar-item.active {
+            background-color: #4F46E5; /* Indigo-600 */
+            color: white;
+        }
+        .sidebar-item:not(.active):hover {
+            background-color: #E0E7FF; /* Indigo-100 */
+            color: #3730A3; /* Indigo-800 */
+        }
+        .answer-btn {
+            transition: background-color 0.2s ease-in-out, transform 0.1s ease-in-out;
+        }
+        .answer-btn:hover {
+            transform: translateY(-2px);
+        }
+        .feedback-correct {
+            background-color: #D1FAE5; /* Green-100 */
+            border-left: 4px solid #10B981; /* Green-500 */
+            color: #065F46; /* Green-800 */
+        }
+        .feedback-incorrect {
+            background-color: #FEE2E2; /* Red-100 */
+            border-left: 4px solid #EF4444; /* Red-500 */
+            color: #991B1B; /* Red-800 */
+        }
+    </style>
+</head>
+<body class="bg-gray-100 text-gray-800">
+
+    <header class="bg-white shadow-md sticky top-0 z-50">
+        <div class="container mx-auto px-4 sm:px-6 lg:px-8 py-4 flex justify-between items-center">
+            <h1 class="text-2xl sm:text-3xl font-bold text-indigo-600">PharmaLearn USMLE</h1>
+            <button id="mobileMenuButton" class="md:hidden p-2 rounded-md text-gray-500 hover:text-indigo-600 hover:bg-indigo-100 focus:outline-none focus:ring-2 focus:ring-indigo-500">
+                <svg class="h-6 w-6" stroke="currentColor" fill="none" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16" />
+                </svg>
+            </button>
+        </div>
+    </header>
+
+    <div class="container mx-auto px-4 sm:px-6 lg:px-8 py-6 flex flex-col md:flex-row gap-6">
+        
+        <nav id="organSystemsNav" class="md:w-1/4 bg-white p-4 rounded-lg shadow-lg h-fit md:sticky md:top-24 transition-transform duration-300 ease-in-out transform -translate-x-full md:translate-x-0 fixed inset-y-0 left-0 z-40 md:relative md:inset-auto md:z-auto overflow-y-auto max-h-[calc(100vh-7rem)]">
+            <div class="flex justify-between items-center md:hidden mb-4">
+                <h2 class="text-lg font-semibold text-indigo-700">Organ Systems</h2>
+                <button id="closeMobileMenuButton" class="p-2 rounded-md text-gray-500 hover:text-indigo-600 hover:bg-indigo-100">
+                     <svg class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+                    </svg>
+                </button>
+            </div>
+            </nav>
+
+        <main class="md:w-3/4 flex flex-col gap-6">
+            <section id="questionArea" class="bg-white p-6 rounded-lg shadow-lg min-h-[300px]">
+                <h2 id="currentSystemTitle" class="text-xl font-semibold text-indigo-700 mb-4">Select an Organ System to Start</h2>
+                <div id="questionModule">
+                    </div>
+                <div id="feedbackModule" class="mt-4">
+                    </div>
+            </section>
+
+            <section id="progressTrackerSection" class="bg-white p-6 rounded-lg shadow-lg">
+                <h2 class="text-xl font-semibold text-indigo-700 mb-4">Progress Tracker</h2>
+                <div id="progressBarsContainer" class="space-y-3">
+                    </div>
+            </section>
+        </main>
+    </div>
+
+    <script>
+        const pharmacologyData = {
+            "Autonomic Nervous System": {
+                questions: [
+                    // Cholinergic Agonists - Direct
+                    {
+                        drugName: "Bethanechol",
+                        question: "Bethanechol is a direct-acting muscarinic agonist. What is its primary clinical use?",
+                        options: ["Treatment of glaucoma", "Postoperative and neurogenic urinary retention"],
+                        correctAnswer: "Postoperative and neurogenic urinary retention",
+                        explanation: "Bethanechol selectively stimulates muscarinic receptors, primarily M3, leading to increased bladder detrusor muscle contraction and is used for urinary retention. Pilocarpine is used for glaucoma."
+                    },
+                    {
+                        drugName: "Pilocarpine",
+                        question: "Pilocarpine is used to treat glaucoma and Sjögren syndrome. What is its mechanism in glaucoma?",
+                        options: ["Decreases aqueous humor production", "Increases aqueous humor outflow through trabecular meshwork and uveoscleral pathway"],
+                        correctAnswer: "Increases aqueous humor outflow through trabecular meshwork and uveoscleral pathway",
+                        explanation: "Pilocarpine causes ciliary muscle contraction (M3 effect), which opens the trabecular meshwork and facilitates aqueous humor outflow, reducing intraocular pressure."
+                    },
+                    // Cholinergic Agonists - Indirect (Acetylcholinesterase inhibitors)
+                    {
+                        drugName: "Neostigmine/Pyridostigmine",
+                        question: "Neostigmine and Pyridostigmine are used for myasthenia gravis. How do they improve muscle strength?",
+                        options: ["By directly stimulating nicotinic receptors at the NMJ", "By inhibiting acetylcholinesterase, increasing ACh at the NMJ"],
+                        correctAnswer: "By inhibiting acetylcholinesterase, increasing ACh at the NMJ",
+                        explanation: "These drugs reversibly inhibit acetylcholinesterase, leading to increased acetylcholine concentrations at the neuromuscular junction, which helps overcome the reduced number of functional ACh receptors in myasthenia gravis."
+                    },
+                    {
+                        drugName: "Donepezil/Rivastigmine/Galantamine",
+                        question: "Donepezil, Rivastigmine, and Galantamine are used for Alzheimer's disease. What is their shared mechanism?",
+                        options: ["NMDA receptor antagonism", "Acetylcholinesterase inhibition in the CNS"],
+                        correctAnswer: "Acetylcholinesterase inhibition in the CNS",
+                        explanation: "These drugs are centrally acting acetylcholinesterase inhibitors, aiming to increase cholinergic transmission in the brain, which is thought to be deficient in Alzheimer's disease. Memantine is an NMDA antagonist."
+                    },
+                    {
+                        drugName: "Physostigmine",
+                        question: "Physostigmine is an acetylcholinesterase inhibitor that can cross the blood-brain barrier. What is its primary indication?",
+                        options: ["Reversal of neuromuscular blockade", "Antidote for atropine overdose (anticholinergic toxicity)"],
+                        correctAnswer: "Antidote for atropine overdose (anticholinergic toxicity)",
+                        explanation: "Physostigmine's ability to enter the CNS makes it useful for reversing central anticholinergic effects caused by drugs like atropine."
+                    },
+                    // Cholinergic Antagonists/Parasympatholytics
+                    {
+                        drugName: "Atropine",
+                        question: "Atropine is a muscarinic antagonist. It is used to treat bradycardia by which mechanism?",
+                        options: ["Increasing sympathetic tone to the heart", "Blocking vagal (parasympathetic) slowing of the heart rate"],
+                        correctAnswer: "Blocking vagal (parasympathetic) slowing of the heart rate",
+                        explanation: "Atropine blocks muscarinic receptors on the SA and AV nodes, thereby reducing vagal influence and increasing heart rate. It's also used for organophosphate poisoning."
+                    },
+                    {
+                        drugName: "Scopolamine",
+                        question: "Scopolamine is effective for motion sickness. It primarily acts on which receptors in the CNS?",
+                        options: ["Dopamine D2 receptors", "Muscarinic M1 receptors"],
+                        correctAnswer: "Muscarinic M1 receptors",
+                        explanation: "Scopolamine is a centrally acting muscarinic antagonist, particularly effective against motion sickness by blocking M1 receptors in the vestibular system and brainstem."
+                    },
+                    {
+                        drugName: "Benztropine",
+                        question: "Benztropine is used in Parkinson's disease and for drug-induced parkinsonism. It primarily antagonizes which receptors?",
+                        options: ["Dopamine receptors", "Muscarinic receptors in the CNS"],
+                        correctAnswer: "Muscarinic receptors in the CNS",
+                        explanation: "Benztropine is a centrally acting anticholinergic drug that helps to correct the imbalance between dopamine and acetylcholine in Parkinson's disease, primarily reducing tremor and rigidity."
+                    },
+                    {
+                        drugName: "Oxybutynin",
+                        question: "Oxybutynin is used for overactive bladder. Its mechanism involves:",
+                        options: ["Stimulating beta-3 adrenergic receptors in the bladder", "Antagonizing muscarinic receptors (primarily M3) in the bladder"],
+                        correctAnswer: "Antagonizing muscarinic receptors (primarily M3) in the bladder",
+                        explanation: "Oxybutynin reduces detrusor muscle contractions by blocking M3 muscarinic receptors, thereby alleviating symptoms of overactive bladder like urgency and frequency."
+                    },
+                    // Adrenergic Agonists/Sympathomimetics - Alpha-1
+                    {
+                        drugName: "Phenylephrine",
+                        question: "Phenylephrine is a selective alpha-1 adrenergic agonist. Its use as a nasal decongestant relies on what effect?",
+                        options: ["Bronchodilation", "Vasoconstriction of nasal mucosal blood vessels"],
+                        correctAnswer: "Vasoconstriction of nasal mucosal blood vessels",
+                        explanation: "Phenylephrine causes vasoconstriction by stimulating alpha-1 receptors on vascular smooth muscle, reducing blood flow and congestion in the nasal mucosa. It's also used for mydriasis and hypotension."
+                    },
+                    // Adrenergic Agonists - Alpha-2
+                    {
+                        drugName: "Clonidine",
+                        question: "Clonidine is an alpha-2 agonist used for hypertension. How does it lower blood pressure?",
+                        options: ["By causing peripheral vasodilation directly", "By acting centrally to reduce sympathetic outflow from the CNS"],
+                        correctAnswer: "By acting centrally to reduce sympathetic outflow from the CNS",
+                        explanation: "Clonidine stimulates presynaptic alpha-2 receptors in the brainstem, which inhibits sympathetic vasomotor centers, leading to reduced norepinephrine release and decreased blood pressure. Also used for ADHD."
+                    },
+                    {
+                        drugName: "Methyldopa",
+                        question: "Methyldopa is an alpha-2 agonist often used for hypertension in pregnancy. Its active metabolite acts similarly to:",
+                        options: ["Phenylephrine", "Clonidine"],
+                        correctAnswer: "Clonidine",
+                        explanation: "Methyldopa is converted to alpha-methylnorepinephrine in the CNS, which then stimulates central alpha-2 adrenergic receptors, reducing sympathetic outflow, similar to clonidine."
+                    },
+                    // Adrenergic Agonists - Beta-1
+                    {
+                        drugName: "Dobutamine",
+                        question: "Dobutamine is primarily a beta-1 agonist. What is its main effect on the heart?",
+                        options: ["Increases heart rate more than contractility", "Increases contractility (positive inotropy) with less effect on heart rate"],
+                        correctAnswer: "Increases contractility (positive inotropy) with less effect on heart rate",
+                        explanation: "Dobutamine is used in acute heart failure and cardiogenic shock due to its strong positive inotropic effect (increased contractility) via beta-1 receptor stimulation, with relatively less chronotropic effect compared to other beta agonists."
+                    },
+                     // Adrenergic Agonists - Beta-2
+                    {
+                        drugName: "Albuterol/Salmeterol",
+                        question: "Albuterol (short-acting) and Salmeterol (long-acting) are beta-2 agonists used for asthma and COPD. Their primary therapeutic effect is:",
+                        options: ["Anti-inflammatory action in the airways", "Bronchodilation by relaxing airway smooth muscle"],
+                        correctAnswer: "Bronchodilation by relaxing airway smooth muscle",
+                        explanation: "Beta-2 agonists stimulate beta-2 receptors on airway smooth muscle, leading to relaxation and bronchodilation, which relieves airflow obstruction."
+                    },
+                    // Adrenergic Agonists - Nonselective/Mixed
+                    {
+                        drugName: "Epinephrine",
+                        question: "Epinephrine is used in anaphylaxis due to its effects on multiple adrenergic receptors. Which effect is crucial for reversing bronchoconstriction?",
+                        options: ["Alpha-1 mediated vasoconstriction", "Beta-2 mediated bronchodilation"],
+                        correctAnswer: "Beta-2 mediated bronchodilation",
+                        explanation: "In anaphylaxis, epinephrine's beta-2 agonism causes bronchodilation, while its alpha-1 agonism causes vasoconstriction (counteracting hypotension and reducing mucosal edema), and beta-1 agonism supports cardiac output."
+                    },
+                    {
+                        drugName: "Norepinephrine",
+                        question: "Norepinephrine primarily acts on which adrenergic receptors to increase blood pressure in shock?",
+                        options: ["Beta-2 and Dopamine D1 receptors", "Alpha-1 and Beta-1 receptors"],
+                        correctAnswer: "Alpha-1 and Beta-1 receptors",
+                        explanation: "Norepinephrine is a potent alpha-1 agonist (causing vasoconstriction) and a beta-1 agonist (increasing heart rate and contractility), making it effective in raising blood pressure in septic shock. It has little effect on beta-2 receptors."
+                    },
+                    {
+                        drugName: "Dopamine",
+                        question: "Dopamine's effects are dose-dependent. At low doses, it primarily stimulates which receptors, causing renal vasodilation?",
+                        options: ["D1 receptors", "Alpha-1 receptors"],
+                        correctAnswer: "D1 receptors",
+                        explanation: "At low doses, dopamine stimulates D1 receptors in renal, mesenteric, coronary, and cerebral beds, leading to vasodilation. At medium doses, it stimulates beta-1 receptors (cardiac effects), and at high doses, alpha-1 receptors (vasoconstriction)."
+                    },
+                    // Adrenergic Antagonists/Sympatholytics - Alpha-blockers
+                    {
+                        drugName: "Prazosin/Terazosin/Doxazosin",
+                        question: "Selective alpha-1 blockers like Prazosin are used for hypertension and BPH. A common side effect, especially with the first dose, is:",
+                        options: ["Reflex bradycardia", "Orthostatic hypotension (first-dose syncope)"],
+                        correctAnswer: "Orthostatic hypotension (first-dose syncope)",
+                        explanation: "These drugs block alpha-1 receptors on vascular smooth muscle, causing vasodilation. This can lead to a significant drop in blood pressure upon standing, especially with the initial dose."
+                    },
+                    {
+                        drugName: "Phenoxybenzamine/Phentolamine",
+                        question: "Phenoxybenzamine (irreversible) and Phentolamine (reversible) are non-selective alpha-blockers used in pheochromocytoma. Why are they used preoperatively?",
+                        options: ["To reduce tumor size", "To control hypertension and prevent catecholamine-induced hypertensive crisis during surgery"],
+                        correctAnswer: "To control hypertension and prevent catecholamine-induced hypertensive crisis during surgery",
+                        explanation: "These drugs block alpha-adrenergic receptors, preventing the intense vasoconstriction caused by high levels of catecholamines released from a pheochromocytoma, especially during surgical manipulation."
+                    },
+                    // Adrenergic Antagonists - Beta-blockers
+                    {
+                        drugName: "Propranolol",
+                        question: "Propranolol is a non-selective beta-blocker. In which patient population should it be used with caution due to risk of bronchoconstriction?",
+                        options: ["Patients with hypertension", "Patients with asthma or COPD"],
+                        correctAnswer: "Patients with asthma or COPD",
+                        explanation: "Propranolol blocks both beta-1 and beta-2 receptors. Beta-2 blockade in the lungs can lead to bronchoconstriction, exacerbating asthma or COPD. It can also mask hypoglycemia."
+                    },
+                    {
+                        drugName: "Metoprolol/Atenolol/Esmolol",
+                        question: "Metoprolol and Atenolol are beta-1 selective (cardioselective) blockers. This selectivity offers an advantage over non-selective beta-blockers primarily by:",
+                        options: ["Causing more potent reduction in blood pressure", "Having less effect on beta-2 receptors in the lungs and peripheral vasculature"],
+                        correctAnswer: "Having less effect on beta-2 receptors in the lungs and peripheral vasculature",
+                        explanation: "Cardioselective beta-blockers preferentially block beta-1 receptors in the heart, reducing side effects like bronchoconstriction (mediated by beta-2 blockade). However, selectivity is lost at higher doses."
+                    },
+                    {
+                        drugName: "Carvedilol/Labetalol",
+                        question: "Carvedilol and Labetalol are mixed alpha and beta-blockers. This combined action is particularly beneficial in:",
+                        options: ["Primarily reducing heart rate", "Providing vasodilation (alpha-1 blockade) in addition to beta-blockade effects"],
+                        correctAnswer: "Providing vasodilation (alpha-1 blockade) in addition to beta-blockade effects",
+                        explanation: "These drugs block beta-1, beta-2, and alpha-1 receptors. The alpha-1 blockade leads to vasodilation, reducing peripheral resistance, which is beneficial in conditions like heart failure (Carvedilol) and hypertension (Labetalol)."
+                    }
+                ],
+                progress: 0, answeredCorrectly: 0, totalQuestions: 0
+            },
+            "Cardiovascular System": {
+                questions: [
+                    // Antihypertensives - Diuretics
+                    {
+                        drugName: "Hydrochlorothiazide (Thiazide)",
+                        question: "Thiazide diuretics like Hydrochlorothiazide primarily act on which segment of the nephron?",
+                        options: ["Proximal convoluted tubule", "Distal convoluted tubule"],
+                        correctAnswer: "Distal convoluted tubule",
+                        explanation: "Thiazides inhibit the Na+/Cl- cotransporter in the distal convoluted tubule. They can cause hypokalemia and hypercalcemia."
+                    },
+                    {
+                        drugName: "Furosemide (Loop Diuretic)",
+                        question: "Loop diuretics such as Furosemide are known for their potent diuretic effect. A characteristic adverse effect is:",
+                        options: ["Hyperkalemia", "Ototoxicity"],
+                        correctAnswer: "Ototoxicity",
+                        explanation: "Loop diuretics can cause ototoxicity, especially when administered rapidly or at high doses. They also cause significant hypokalemia and are sulfa drugs (potential for allergy)."
+                    },
+                    {
+                        drugName: "Spironolactone (K+-sparing)",
+                        question: "Spironolactone is a potassium-sparing diuretic that acts as an antagonist at which receptor?",
+                        options: ["Angiotensin II receptor", "Aldosterone receptor"],
+                        correctAnswer: "Aldosterone receptor",
+                        explanation: "Spironolactone competitively inhibits aldosterone receptors in the collecting duct, leading to increased Na+ excretion and K+ retention. It can cause gynecomastia."
+                    },
+                    // Antihypertensives - ACE Inhibitors & ARBs
+                    {
+                        drugName: "Lisinopril (ACE Inhibitor)",
+                        question: "ACE inhibitors like Lisinopril block the conversion of angiotensin I to angiotensin II. A key contraindication is:",
+                        options: ["Heart failure", "Pregnancy"],
+                        correctAnswer: "Pregnancy",
+                        explanation: "ACE inhibitors are teratogenic and contraindicated in pregnancy ('fetus-pril'). They can cause dry cough, angioedema, and hyperkalemia."
+                    },
+                    {
+                        drugName: "Losartan (ARB)",
+                        question: "Angiotensin Receptor Blockers (ARBs) like Losartan are often used as an alternative to ACE inhibitors because they are less likely to cause:",
+                        options: ["Hyperkalemia", "Dry cough"],
+                        correctAnswer: "Dry cough",
+                        explanation: "ARBs (e.g., Losartan, Valsartan) do not typically cause a dry cough or angioedema, which can occur with ACE inhibitors. However, they share risks of hyperkalemia and teratogenicity."
+                    },
+                    // Antihypertensives - Calcium Channel Blockers
+                    {
+                        drugName: "Nifedipine/Amlodipine (Dihydropyridines)",
+                        question: "Dihydropyridine calcium channel blockers (e.g., Nifedipine, Amlodipine) primarily cause vasodilation. A common side effect is:",
+                        options: ["Bradycardia", "Peripheral edema"],
+                        correctAnswer: "Peripheral edema",
+                        explanation: "Dihydropyridine CCBs are potent vasodilators and can cause peripheral edema, flushing, and reflex tachycardia. They have less direct effect on cardiac contractility and conduction compared to non-dihydropyridines."
+                    },
+                    {
+                        drugName: "Verapamil/Diltiazem (Non-dihydropyridines)",
+                        question: "Non-dihydropyridine calcium channel blockers like Verapamil and Diltiazem have more pronounced effects on:",
+                        options: ["Peripheral vasodilation", "Heart rate and AV nodal conduction"],
+                        correctAnswer: "Heart rate and AV nodal conduction",
+                        explanation: "Verapamil and Diltiazem slow heart rate and AV nodal conduction, making them useful as antiarrhythmics and for rate control in atrial fibrillation. Constipation is a notable side effect of Verapamil."
+                    },
+                     // Antihypertensives - Direct Vasodilators
+                    {
+                        drugName: "Hydralazine",
+                        question: "Hydralazine is a direct vasodilator. Long-term use can be associated with which adverse effect?",
+                        options: ["Drug-induced lupus-like syndrome", "Ototoxicity"],
+                        correctAnswer: "Drug-induced lupus-like syndrome",
+                        explanation: "Hydralazine can cause a reversible lupus-like syndrome, especially in slow acetylators. It primarily dilates arterioles."
+                    },
+                    {
+                        drugName: "Minoxidil",
+                        question: "Minoxidil is a potent direct vasodilator. A characteristic side effect is:",
+                        options: ["Dry cough", "Hypertrichosis (excessive hair growth)"],
+                        correctAnswer: "Hypertrichosis (excessive hair growth)",
+                        explanation: "Minoxidil opens K+ channels in smooth muscle, causing vasodilation. It is known for causing hypertrichosis and is also used topically for hair loss."
+                    },
+                    // Antiarrhythmics - Class I (Na+ channel blockers)
+                    {
+                        drugName: "Procainamide (Class IA)",
+                        question: "Procainamide, a Class IA antiarrhythmic, can cause which serious hematological side effect and a specific syndrome?",
+                        options: ["Aplastic anemia and Reye syndrome", "Agranulocytosis and drug-induced lupus-like syndrome"],
+                        correctAnswer: "Agranulocytosis and drug-induced lupus-like syndrome",
+                        explanation: "Procainamide can cause agranulocytosis and a reversible lupus-like syndrome. It prolongs the AP duration."
+                    },
+                    {
+                        drugName: "Lidocaine (Class IB)",
+                        question: "Lidocaine is a Class IB antiarrhythmic primarily used for ventricular arrhythmias, especially post-MI. It has significant effects on which part of the cardiac action potential in ischemic tissue?",
+                        options: ["Prolongs Phase 0 depolarization", "Shortens Phase 3 repolarization (AP duration)"],
+                        correctAnswer: "Shortens Phase 3 repolarization (AP duration)",
+                        explanation: "Lidocaine binds to Na+ channels in the inactivated state, more prevalent in ischemic tissue, and shortens the action potential duration. CNS side effects are common."
+                    },
+                    {
+                        drugName: "Flecainide (Class IC)",
+                        question: "Flecainide, a Class IC antiarrhythmic, is contraindicated in patients with:",
+                        options: ["Supraventricular tachycardia with normal heart structure", "Structural heart disease (e.g., post-MI) due to proarrhythmic risk"],
+                        correctAnswer: "Structural heart disease (e.g., post-MI) due to proarrhythmic risk",
+                        explanation: "Class IC agents like Flecainide significantly slow conduction velocity (markedly widen QRS) and are proarrhythmic, especially in patients with underlying structural heart disease."
+                    },
+                    // Antiarrhythmics - Class II (Beta-blockers)
+                    {
+                        drugName: "Metoprolol (Class II)",
+                        question: "Beta-blockers like Metoprolol are Class II antiarrhythmics. Their primary antiarrhythmic effect is due to:",
+                        options: ["Blocking potassium channels", "Slowing SA node firing rate and AV nodal conduction"],
+                        correctAnswer: "Slowing SA node firing rate and AV nodal conduction",
+                        explanation: "Beta-blockers decrease sympathetic stimulation of the heart, reducing SA node automaticity and slowing AV nodal conduction, which is useful for rate control and preventing certain arrhythmias."
+                    },
+                    // Antiarrhythmics - Class III (K+ channel blockers)
+                    {
+                        drugName: "Amiodarone (Class III)",
+                        question: "Amiodarone is a Class III antiarrhythmic with a broad spectrum of action. It is known for causing which thyroid dysfunction?",
+                        options: ["Only hypothyroidism", "Both hypothyroidism and hyperthyroidism"],
+                        correctAnswer: "Both hypothyroidism and hyperthyroidism",
+                        explanation: "Amiodarone contains iodine and can interfere with thyroid hormone synthesis and metabolism, leading to either hypothyroidism or hyperthyroidism. It also causes pulmonary fibrosis, liver toxicity, corneal deposits, and skin discoloration."
+                    },
+                    {
+                        drugName: "Sotalol (Class III)",
+                        question: "Sotalol has both Class III (K+ channel blocking) and which other antiarrhythmic property?",
+                        options: ["Class I (Na+ channel blocking) property", "Non-selective beta-blocking (Class II) property"],
+                        correctAnswer: "Non-selective beta-blocking (Class II) property",
+                        explanation: "Sotalol is unique as it possesses both K+ channel blocking activity (prolonging AP duration and QT interval) and non-selective beta-blocking activity."
+                    },
+                    // Antiarrhythmics - Class IV (Ca2+ channel blockers)
+                    {
+                        drugName: "Verapamil/Diltiazem (Class IV)",
+                        question: "Verapamil and Diltiazem are Class IV antiarrhythmics. They are primarily used for:",
+                        options: ["Ventricular tachycardia", "Supraventricular tachycardias (e.g., AVNRT, atrial fibrillation rate control)"],
+                        correctAnswer: "Supraventricular tachycardias (e.g., AVNRT, atrial fibrillation rate control)",
+                        explanation: "These non-dihydropyridine CCBs slow conduction through the AV node and are effective in terminating AVNRT and controlling ventricular rate in atrial fibrillation/flutter."
+                    },
+                    // Antiarrhythmics - Others
+                    {
+                        drugName: "Adenosine",
+                        question: "Adenosine is used for acute termination of paroxysmal supraventricular tachycardia (PSVT). Its mechanism involves:",
+                        options: ["Increasing intracellular cAMP", "Activating K+ channels, causing hyperpolarization and slowing AV conduction"],
+                        correctAnswer: "Activating K+ channels, causing hyperpolarization and slowing AV conduction",
+                        explanation: "Adenosine has a very short half-life and acts on A1 receptors in the AV node, leading to transient AV block. Causes flushing and chest pain."
+                    },
+                    {
+                        drugName: "Digoxin",
+                        question: "Digoxin is used for heart failure and atrial fibrillation. It inhibits which enzyme?",
+                        options: ["Na+/K+ ATPase pump", "HMG-CoA reductase"],
+                        correctAnswer: "Na+/K+ ATPase pump",
+                        explanation: "Digoxin inhibits the Na+/K+ ATPase pump in myocardial cells, leading to increased intracellular Na+, which then increases intracellular Ca2+ via the Na+/Ca2+ exchanger, resulting in increased contractility. It also increases vagal tone (slowing AV conduction)."
+                    },
+                    // Antianginals
+                    {
+                        drugName: "Nitroglycerin/Isosorbide dinitrate",
+                        question: "Nitrates (e.g., Nitroglycerin) relieve angina primarily by:",
+                        options: ["Increasing coronary blood flow by dilating atherosclerotic coronary arteries", "Decreasing myocardial oxygen demand through venodilation (reduced preload) and some arterial dilation (reduced afterload)"],
+                        correctAnswer: "Decreasing myocardial oxygen demand through venodilation (reduced preload) and some arterial dilation (reduced afterload)",
+                        explanation: "Nitrates are converted to nitric oxide (NO), which causes smooth muscle relaxation. Venodilation is more prominent than arterial dilation, reducing preload. Reflex tachycardia and headache are common side effects."
+                    },
+                    // Anticoagulants
+                    {
+                        drugName: "Heparin",
+                        question: "Heparin is an anticoagulant that potentiates the activity of which endogenous inhibitor of clotting factors?",
+                        options: ["Protein C", "Antithrombin III"],
+                        correctAnswer: "Antithrombin III",
+                        explanation: "Heparin binds to antithrombin III, greatly enhancing its ability to inactivate thrombin (Factor IIa) and Factor Xa. Monitored by aPTT, reversal with protamine sulfate."
+                    },
+                    {
+                        drugName: "Warfarin",
+                        question: "Warfarin interferes with the synthesis of vitamin K-dependent clotting factors. Which factors are affected?",
+                        options: ["Factors V and VIII", "Factors II, VII, IX, X, and Proteins C & S"],
+                        correctAnswer: "Factors II, VII, IX, X, and Proteins C & S",
+                        explanation: "Warfarin inhibits vitamin K epoxide reductase, preventing the gamma-carboxylation of factors II (prothrombin), VII, IX, X, and anticoagulant proteins C and S. Monitored by PT/INR."
+                    },
+                    {
+                        drugName: "Dabigatran",
+                        question: "Dabigatran is a direct oral anticoagulant (DOAC). What is its specific target?",
+                        options: ["Factor Xa", "Thrombin (Factor IIa)"],
+                        correctAnswer: "Thrombin (Factor IIa)",
+                        explanation: "Dabigatran is a direct thrombin inhibitor. Rivaroxaban and Apixaban are direct Factor Xa inhibitors."
+                    },
+                    // Antiplatelets
+                    {
+                        drugName: "Aspirin",
+                        question: "Aspirin's antiplatelet effect is due to irreversible inhibition of:",
+                        options: ["ADP P2Y12 receptor", "Cyclooxygenase-1 (COX-1)"],
+                        correctAnswer: "Cyclooxygenase-1 (COX-1)",
+                        explanation: "Aspirin acetylates and irreversibly inhibits COX-1 in platelets, preventing the synthesis of thromboxane A2, a potent platelet aggregator."
+                    },
+                    {
+                        drugName: "Clopidogrel/Ticagrelor",
+                        question: "Clopidogrel and Ticagrelor are antiplatelet agents that block which receptor on platelets?",
+                        options: ["Glycoprotein IIb/IIIa receptor", "ADP P2Y12 receptor"],
+                        correctAnswer: "ADP P2Y12 receptor",
+                        explanation: "These drugs are P2Y12 receptor antagonists, preventing ADP-mediated platelet activation and aggregation. Clopidogrel is a prodrug."
+                    },
+                    {
+                        drugName: "Abciximab/Tirofiban",
+                        question: "Abciximab and Tirofiban are potent antiplatelet drugs that target:",
+                        options: ["Thromboxane A2 synthesis", "Glycoprotein IIb/IIIa receptors"],
+                        correctAnswer: "Glycoprotein IIb/IIIa receptors",
+                        explanation: "These drugs are GP IIb/IIIa inhibitors, blocking the final common pathway of platelet aggregation by preventing fibrinogen binding to this receptor."
+                    },
+                    // Thrombolytics
+                    {
+                        drugName: "Alteplase (tPA)/Streptokinase",
+                        question: "Thrombolytic agents like Alteplase (tPA) and Streptokinase work by:",
+                        options: ["Preventing new clot formation", "Converting plasminogen to plasmin, which degrades fibrin clots"],
+                        correctAnswer: "Converting plasminogen to plasmin, which degrades fibrin clots",
+                        explanation: "These drugs are used in acute MI, ischemic stroke, and PE to dissolve existing clots by promoting the conversion of plasminogen to plasmin. Major risk is hemorrhage."
+                    },
+                    // Lipid-lowering drugs
+                    {
+                        drugName: "Statins (Atorvastatin, Simvastatin)",
+                        question: "Statins lower cholesterol by inhibiting which key enzyme in cholesterol biosynthesis?",
+                        options: ["Lipoprotein lipase", "HMG-CoA reductase"],
+                        correctAnswer: "HMG-CoA reductase",
+                        explanation: "Statins are competitive inhibitors of HMG-CoA reductase, the rate-limiting enzyme in cholesterol synthesis, primarily reducing LDL levels. Myopathy and hepatotoxicity are key side effects."
+                    },
+                    {
+                        drugName: "Ezetimibe",
+                        question: "Ezetimibe lowers cholesterol by what mechanism?",
+                        options: ["Increasing LDL receptor expression", "Inhibiting intestinal absorption of dietary and biliary cholesterol"],
+                        correctAnswer: "Inhibiting intestinal absorption of dietary and biliary cholesterol",
+                        explanation: "Ezetimibe selectively inhibits the absorption of cholesterol at the brush border of the small intestine by targeting the NPC1L1 protein."
+                    },
+                    {
+                        drugName: "Fibrates (e.g., Gemfibrozil, Fenofibrate)",
+                        question: "Fibrates are primarily used to treat hypertriglyceridemia. They activate which nuclear receptor?",
+                        options: ["Peroxisome proliferator-activated receptor-alpha (PPAR-α)", "Farnesoid X receptor (FXR)"],
+                        correctAnswer: "Peroxisome proliferator-activated receptor-alpha (PPAR-α)",
+                        explanation: "Fibrates activate PPAR-α, leading to increased lipoprotein lipase activity, increased fatty acid oxidation, and decreased VLDL production, thereby lowering triglycerides and increasing HDL."
+                    },
+                    {
+                        drugName: "Niacin (Vitamin B3)",
+                        question: "Niacin is used for dyslipidemia, particularly to increase HDL levels. A common and often limiting side effect is:",
+                        options: ["Hypoglycemia", "Cutaneous flushing and pruritus"],
+                        correctAnswer: "Cutaneous flushing and pruritus",
+                        explanation: "Niacin can cause intense cutaneous flushing and itching, mediated by prostaglandins (can be reduced by aspirin). It also increases HDL and lowers LDL and triglycerides."
+                    },
+                    {
+                        drugName: "PCSK9 inhibitors (e.g., Alirocumab, Evolocumab)",
+                        question: "PCSK9 inhibitors are monoclonal antibodies that significantly lower LDL cholesterol by:",
+                        options: ["Directly inhibiting HMG-CoA reductase", "Preventing PCSK9-mediated degradation of LDL receptors, thereby increasing LDL receptor availability"],
+                        correctAnswer: "Preventing PCSK9-mediated degradation of LDL receptors, thereby increasing LDL receptor availability",
+                        explanation: "By inhibiting PCSK9, these drugs increase the number of LDL receptors on hepatocytes, leading to increased clearance of LDL from the circulation. They are injectable and very potent."
+                    }
+                ],
+                progress: 0, answeredCorrectly: 0, totalQuestions: 0
+            },
+            "Renal System": {
+                questions: [
+                    // Diuretics (re-emphasize renal specifics)
+                    {
+                        drugName: "Acetazolamide (Carbonic Anhydrase Inhibitor)",
+                        question: "Acetazolamide acts in the proximal convoluted tubule. Its diuretic effect leads to excretion of:",
+                        options: ["Sodium chloride", "Sodium bicarbonate"],
+                        correctAnswer: "Sodium bicarbonate",
+                        explanation: "Acetazolamide inhibits carbonic anhydrase, reducing H+ formation and Na+/H+ exchange, leading to increased excretion of NaHCO3 and water. Used for glaucoma, altitude sickness, metabolic alkalosis."
+                    },
+                    {
+                        drugName: "Mannitol (Osmotic Diuretic)",
+                        question: "Mannitol is an osmotic diuretic. How does it primarily increase urine output?",
+                        options: ["By blocking Na+ reabsorption in the collecting duct", "By increasing osmotic pressure of glomerular filtrate, drawing water into tubules and preventing its reabsorption"],
+                        correctAnswer: "By increasing osmotic pressure of glomerular filtrate, drawing water into tubules and preventing its reabsorption",
+                        explanation: "Mannitol is filtered but not reabsorbed, increasing the osmolarity of the tubular fluid, primarily in the proximal tubule and descending limb of Henle, thus reducing water reabsorption."
+                    },
+                    // Drugs affecting ADH
+                    {
+                        drugName: "Desmopressin (DDAVP)",
+                        question: "Desmopressin is a synthetic analog of ADH. It is used to treat central diabetes insipidus by acting on which receptors in the collecting duct?",
+                        options: ["V1 receptors", "V2 receptors"],
+                        correctAnswer: "V2 receptors",
+                        explanation: "Desmopressin selectively activates V2 receptors in the renal collecting ducts, increasing water reabsorption by promoting insertion of aquaporin-2 channels. Also used for von Willebrand disease and nocturnal enuresis."
+                    },
+                    {
+                        drugName: "Demeclocycline",
+                        question: "Demeclocycline is used to treat SIADH (Syndrome of Inappropriate ADH Secretion). Its mechanism involves:",
+                        options: ["Potentiating ADH action", "Antagonizing ADH action at the collecting duct, inducing nephrogenic diabetes insipidus"],
+                        correctAnswer: "Antagonizing ADH action at the collecting duct, inducing nephrogenic diabetes insipidus",
+                        explanation: "Demeclocycline (a tetracycline antibiotic) inhibits the effect of ADH on the renal tubules, reducing water reabsorption and helping to correct hyponatremia in SIADH."
+                    }
+                ],
+                progress: 0, answeredCorrectly: 0, totalQuestions: 0
+            },
+            "Respiratory System": {
+                questions: [
+                    // Bronchodilators
+                    {
+                        drugName: "Albuterol (SABA)",
+                        question: "Albuterol, a short-acting beta-2 agonist, is the first-line treatment for:",
+                        options: ["Long-term control of persistent asthma", "Acute asthma exacerbations and exercise-induced bronchospasm"],
+                        correctAnswer: "Acute asthma exacerbations and exercise-induced bronchospasm",
+                        explanation: "SABAs like Albuterol provide rapid bronchodilation (within minutes) and are used for quick relief of asthma symptoms."
+                    },
+                    {
+                        drugName: "Salmeterol/Formoterol (LABA)",
+                        question: "Long-acting beta-2 agonists (LABAs) like Salmeterol are used for asthma maintenance. They should always be co-administered with what other class of medication in asthma?",
+                        options: ["Oral corticosteroids", "Inhaled corticosteroids (ICS)"],
+                        correctAnswer: "Inhaled corticosteroids (ICS)",
+                        explanation: "LABAs should not be used as monotherapy for asthma due to increased risk of asthma-related death; they must be combined with an ICS for long-term control."
+                    },
+                    {
+                        drugName: "Ipratropium/Tiotropium (Antimuscarinics)",
+                        question: "Ipratropium (short-acting) and Tiotropium (long-acting) are inhaled antimuscarinics. They are particularly effective in treating:",
+                        options: ["Allergic rhinitis", "Chronic Obstructive Pulmonary Disease (COPD)"],
+                        correctAnswer: "Chronic Obstructive Pulmonary Disease (COPD)",
+                        explanation: "Antimuscarinics block ACh-mediated bronchoconstriction. They are a mainstay in COPD management and can be used as add-on therapy in asthma."
+                    },
+                    // Anti-inflammatory Agents
+                    {
+                        drugName: "Fluticasone/Budesonide (ICS)",
+                        question: "Inhaled corticosteroids (ICS) like Fluticasone are the cornerstone of long-term asthma management. Their primary mechanism is:",
+                        options: ["Direct bronchodilation", "Reducing airway inflammation and hyperresponsiveness"],
+                        correctAnswer: "Reducing airway inflammation and hyperresponsiveness",
+                        explanation: "ICS decrease the synthesis of inflammatory mediators and reduce inflammatory cell infiltration in the airways. Common side effect is oral candidiasis."
+                    },
+                    {
+                        drugName: "Prednisone (Systemic Corticosteroid)",
+                        question: "Systemic corticosteroids like Prednisone are used for severe acute asthma exacerbations. Long-term systemic use is limited due to:",
+                        options: ["Risk of bronchospasm", "Numerous significant adverse effects (e.g., Cushingoid features, immunosuppression)"],
+                        correctAnswer: "Numerous significant adverse effects (e.g., Cushingoid features, immunosuppression)",
+                        explanation: "While highly effective for severe inflammation, long-term systemic corticosteroids have substantial side effects, including HPA axis suppression, osteoporosis, hyperglycemia, etc."
+                    },
+                    {
+                        drugName: "Montelukast/Zafirlukast (Leukotriene Receptor Antagonists)",
+                        question: "Montelukast is a leukotriene D4 receptor antagonist. It is often beneficial in patients with asthma triggered by:",
+                        options: ["Beta-blockers", "Aspirin or exercise"],
+                        correctAnswer: "Aspirin or exercise",
+                        explanation: "Leukotrienes are important mediators in aspirin-exacerbated respiratory disease and exercise-induced bronchoconstriction. Montelukast blocks their effects."
+                    },
+                    {
+                        drugName: "Zileuton (5-Lipoxygenase Inhibitor)",
+                        question: "Zileuton inhibits leukotriene synthesis by blocking which enzyme?",
+                        options: ["Cyclooxygenase (COX)", "5-Lipoxygenase"],
+                        correctAnswer: "5-Lipoxygenase",
+                        explanation: "Zileuton inhibits 5-lipoxygenase, the enzyme responsible for converting arachidonic acid into leukotrienes. Hepatotoxicity is a concern."
+                    },
+                    {
+                        drugName: "Cromolyn",
+                        question: "Cromolyn sodium is used for asthma prophylaxis. Its mechanism involves:",
+                        options: ["Beta-2 receptor agonism", "Stabilizing mast cell membranes, preventing degranulation"],
+                        correctAnswer: "Stabilizing mast cell membranes, preventing degranulation",
+                        explanation: "Cromolyn prevents the release of histamine and other inflammatory mediators from mast cells. It is used prophylactically and is not effective for acute attacks."
+                    },
+                    // Other Asthma/COPD Drugs
+                    {
+                        drugName: "Omalizumab",
+                        question: "Omalizumab is a monoclonal antibody used for severe allergic asthma. What is its target?",
+                        options: ["Tumor Necrosis Factor-alpha (TNF-α)", "Immunoglobulin E (IgE)"],
+                        correctAnswer: "Immunoglobulin E (IgE)",
+                        explanation: "Omalizumab binds to free IgE, preventing it from binding to mast cells and basophils, thereby reducing the allergic inflammatory cascade."
+                    }
+                ],
+                progress: 0, answeredCorrectly: 0, totalQuestions: 0
+            },
+            "Gastrointestinal System": {
+                questions: [
+                    // Acid-reducing drugs
+                    {
+                        drugName: "Omeprazole/Lansoprazole (PPIs)",
+                        question: "Proton Pump Inhibitors (PPIs) like Omeprazole are highly effective in reducing gastric acid. Long-term use has been associated with an increased risk of:",
+                        options: ["Gastric ulcers", "Clostridium difficile infection and hip fractures"],
+                        correctAnswer: "Clostridium difficile infection and hip fractures",
+                        explanation: "Long-term PPI use can alter gut flora (increasing C. difficile risk) and potentially decrease calcium absorption (contributing to fracture risk). They irreversibly inhibit H+/K+ ATPase."
+                    },
+                    {
+                        drugName: "Ranitidine/Famotidine (H2 Blockers)",
+                        question: "H2 receptor antagonists like Famotidine reduce gastric acid secretion by blocking the action of which substance on parietal cells?",
+                        options: ["Acetylcholine", "Histamine"],
+                        correctAnswer: "Histamine",
+                        explanation: "H2 blockers competitively antagonize histamine H2 receptors on gastric parietal cells, reducing acid secretion, especially nocturnal acid output. Less potent than PPIs."
+                    },
+                    // Antiemetics
+                    {
+                        drugName: "Ondansetron (5-HT3 antagonist)",
+                        question: "Ondansetron is a 5-HT3 receptor antagonist primarily used for:",
+                        options: ["Motion sickness", "Chemotherapy-induced nausea and vomiting (CINV)"],
+                        correctAnswer: "Chemotherapy-induced nausea and vomiting (CINV)",
+                        explanation: "5-HT3 antagonists block serotonin receptors in the GI tract and chemoreceptor trigger zone, making them effective against CINV and postoperative nausea/vomiting."
+                    },
+                    {
+                        drugName: "Metoclopramide",
+                        question: "Metoclopramide is an antiemetic and prokinetic agent. Its D2 receptor antagonism can lead to which type of adverse effects?",
+                        options: ["Anticholinergic effects (dry mouth, blurred vision)", "Extrapyramidal symptoms (EPS) and tardive dyskinesia"],
+                        correctAnswer: "Extrapyramidal symptoms (EPS) and tardive dyskinesia",
+                        explanation: "Metoclopramide's dopamine D2 receptor blockade can cause EPS, including dystonia, akathisia, parkinsonism, and potentially tardive dyskinesia with long-term use."
+                    },
+                    // Laxatives/Antidiarrheals
+                    {
+                        drugName: "Loperamide",
+                        question: "Loperamide is an antidiarrheal that acts as an opioid agonist. How does it primarily reduce diarrhea?",
+                        options: ["By increasing intestinal fluid secretion", "By decreasing intestinal motility and increasing water absorption"],
+                        correctAnswer: "By decreasing intestinal motility and increasing water absorption",
+                        explanation: "Loperamide acts on μ-opioid receptors in the gut, inhibiting peristalsis and prolonging transit time, which allows for more water and electrolyte absorption. It does not cross BBB well."
+                    },
+                    {
+                        drugName: "Psyllium (Bulk-forming laxative)",
+                        question: "Psyllium is a bulk-forming laxative. How does it promote bowel movements?",
+                        options: ["By directly stimulating colonic smooth muscle", "By absorbing water in the intestine, increasing fecal bulk and stimulating peristalsis"],
+                        correctAnswer: "By absorbing water in the intestine, increasing fecal bulk and stimulating peristalsis",
+                        explanation: "Bulk-forming laxatives like psyllium (metamucil) are indigestible hydrophilic colloids that absorb water, forming a bulky, emollient gel that distends the colon and promotes peristalsis."
+                    },
+                    // Drugs for IBD
+                    {
+                        drugName: "Sulfasalazine",
+                        question: "Sulfasalazine is used in inflammatory bowel disease (IBD). It is a combination of which two components?",
+                        options: ["Mesalamine (5-ASA) and Sulfapyridine", "A corticosteroid and an antibiotic"],
+                        correctAnswer: "Mesalamine (5-ASA) and Sulfapyridine",
+                        explanation: "Sulfasalazine is cleaved by colonic bacteria into 5-aminosalicylic acid (5-ASA, mesalamine), which has anti-inflammatory effects locally in the colon, and sulfapyridine, which is absorbed and can cause systemic side effects (e.g., sulfa allergy, male infertility)."
+                    },
+                    {
+                        drugName: "Infliximab (Anti-TNF-α)",
+                        question: "Infliximab is a monoclonal antibody used for IBD and other autoimmune conditions. It targets:",
+                        options: ["Interleukin-12 (IL-12)", "Tumor Necrosis Factor-alpha (TNF-α)"],
+                        correctAnswer: "Tumor Necrosis Factor-alpha (TNF-α)",
+                        explanation: "Infliximab binds to and neutralizes TNF-α, a key pro-inflammatory cytokine involved in the pathogenesis of IBD. Risk of infection (including TB reactivation) and infusion reactions."
+                    }
+                ],
+                progress: 0, answeredCorrectly: 0, totalQuestions: 0
+            },
+            "Endocrine System": {
+                questions: [
+                    // Diabetes Mellitus - Insulin
+                    {
+                        drugName: "Insulin (general)",
+                        question: "What is the most common and significant adverse effect of insulin therapy?",
+                        options: ["Hyperglycemia", "Hypoglycemia"],
+                        correctAnswer: "Hypoglycemia",
+                        explanation: "Hypoglycemia is the primary risk associated with all insulin preparations. Weight gain and lipodystrophy at injection sites can also occur."
+                    },
+                    // Diabetes Mellitus - Oral Hypoglycemics
+                    {
+                        drugName: "Metformin (Biguanide)",
+                        question: "Metformin is the first-line oral agent for type 2 diabetes. A rare but serious side effect is:",
+                        options: ["Pancreatitis", "Lactic acidosis"],
+                        correctAnswer: "Lactic acidosis",
+                        explanation: "Metformin primarily decreases hepatic glucose production and increases peripheral insulin sensitivity. Lactic acidosis is a rare but life-threatening side effect, especially in patients with renal impairment or hypoxia."
+                    },
+                    {
+                        drugName: "Glipizide/Glyburide (Sulfonylureas)",
+                        question: "Sulfonylureas like Glipizide stimulate insulin release from pancreatic beta cells. Which adverse effects are common with this class?",
+                        options: ["Weight loss and UTIs", "Hypoglycemia and weight gain"],
+                        correctAnswer: "Hypoglycemia and weight gain",
+                        explanation: "Sulfonylureas increase insulin secretion regardless of blood glucose levels, leading to a risk of hypoglycemia. Weight gain is also a common side effect."
+                    },
+                    {
+                        drugName: "Pioglitazone/Rosiglitazone (Thiazolidinediones - TZDs)",
+                        question: "Thiazolidinediones (TZDs) like Pioglitazone improve insulin sensitivity by activating which nuclear receptor?",
+                        options: ["PPAR-gamma (Peroxisome proliferator-activated receptor-gamma)", "Glucagon-like peptide-1 (GLP-1) receptor"],
+                        correctAnswer: "PPAR-gamma (Peroxisome proliferator-activated receptor-gamma)",
+                        explanation: "TZDs are agonists for PPAR-γ, which regulates gene expression involved in glucose and lipid metabolism. Side effects include fluid retention, weight gain, and increased risk of heart failure (especially Rosiglitazone)."
+                    },
+                    {
+                        drugName: "Sitagliptin/Saxagliptin (DPP-4 inhibitors)",
+                        question: "DPP-4 inhibitors like Sitagliptin enhance the action of incretin hormones (GLP-1, GIP) by:",
+                        options: ["Directly stimulating incretin receptors", "Preventing the degradation of endogenous incretins by the DPP-4 enzyme"],
+                        correctAnswer: "Preventing the degradation of endogenous incretins by the DPP-4 enzyme",
+                        explanation: "By inhibiting DPP-4, these drugs prolong the activity of GLP-1 and GIP, which leads to glucose-dependent insulin secretion and suppression of glucagon. Generally well-tolerated, but risk of pancreatitis."
+                    },
+                    {
+                        drugName: "Empagliflozin/Canagliflozin (SGLT2 inhibitors)",
+                        question: "SGLT2 inhibitors like Empagliflozin lower blood glucose by which mechanism in the kidneys?",
+                        options: ["Increasing insulin secretion", "Blocking glucose reabsorption in the proximal convoluted tubule, leading to glucosuria"],
+                        correctAnswer: "Blocking glucose reabsorption in the proximal convoluted tubule, leading to glucosuria",
+                        explanation: "SGLT2 inhibitors block the sodium-glucose cotransporter 2 in the kidneys, reducing glucose reabsorption and increasing urinary glucose excretion. Side effects include UTIs, genital mycotic infections, and euglycemic DKA (rare)."
+                    },
+                    {
+                        drugName: "Exenatide/Liraglutide (GLP-1 agonists)",
+                        question: "GLP-1 agonists like Exenatide are injectable agents for type 2 diabetes. Besides stimulating insulin secretion, they also:",
+                        options: ["Increase glucagon secretion and accelerate gastric emptying", "Suppress glucagon secretion, slow gastric emptying, and promote satiety (weight loss)"],
+                        correctAnswer: "Suppress glucagon secretion, slow gastric emptying, and promote satiety (weight loss)",
+                        explanation: "GLP-1 agonists mimic the action of endogenous GLP-1, leading to glucose-dependent insulin release, reduced glucagon, delayed gastric emptying, and central appetite suppression. Nausea and pancreatitis are concerns."
+                    },
+                    // Thyroid Disorders
+                    {
+                        drugName: "Levothyroxine (T4)",
+                        question: "Levothyroxine is synthetic T4 used for hypothyroidism. Its dosage is typically monitored using which laboratory test?",
+                        options: ["Serum T3 levels", "Serum TSH (Thyroid Stimulating Hormone) levels"],
+                        correctAnswer: "Serum TSH (Thyroid Stimulating Hormone) levels",
+                        explanation: "TSH levels are the most sensitive indicator of thyroid hormone status and are used to titrate the Levothyroxine dose. Over-replacement can cause symptoms of hyperthyroidism."
+                    },
+                    {
+                        drugName: "Methimazole/Propylthiouracil (PTU) (Thionamides)",
+                        question: "Methimazole and PTU are used for hyperthyroidism. They inhibit which enzyme crucial for thyroid hormone synthesis?",
+                        options: ["Thyroid-stimulating hormone (TSH) receptor", "Thyroid peroxidase (TPO)"],
+                        correctAnswer: "Thyroid peroxidase (TPO)",
+                        explanation: "Thionamides inhibit thyroid peroxidase, thus blocking the organification of iodine and coupling of iodotyrosines. PTU also inhibits peripheral conversion of T4 to T3. Agranulocytosis is a rare but serious side effect."
+                    },
+                    // Corticosteroids
+                    {
+                        drugName: "Prednisone/Dexamethasone",
+                        question: "Corticosteroids like Prednisone have potent anti-inflammatory and immunosuppressive effects. A significant metabolic side effect is:",
+                        options: ["Hypoglycemia", "Hyperglycemia"],
+                        correctAnswer: "Hyperglycemia",
+                        explanation: "Corticosteroids increase gluconeogenesis and insulin resistance, leading to hyperglycemia. Other side effects include Cushingoid features, osteoporosis, HPA axis suppression, and increased infection risk."
+                    },
+                    // Growth hormone disorders
+                    {
+                        drugName: "Somatropin",
+                        question: "Somatropin is recombinant human growth hormone (GH). It is primarily used to treat:",
+                        options: ["Acromegaly", "GH deficiency in children and adults"],
+                        correctAnswer: "GH deficiency in children and adults",
+                        explanation: "Somatropin replaces endogenous GH and is used for conditions like pituitary dwarfism and Turner syndrome. Octreotide is used for acromegaly."
+                    },
+                    {
+                        drugName: "Octreotide",
+                        question: "Octreotide is a somatostatin analog used for acromegaly and variceal bleeds. It acts by:",
+                        options: ["Stimulating GH release", "Inhibiting the release of GH, glucagon, insulin, and splanchnic vasodilation"],
+                        correctAnswer: "Inhibiting the release of GH, glucagon, insulin, and splanchnic vasodilation",
+                        explanation: "Octreotide mimics somatostatin, inhibiting GH secretion (for acromegaly) and reducing splanchnic blood flow by inhibiting vasodilator hormones (for variceal bleeds). Can cause gallstones."
+                    }
+                ],
+                progress: 0, answeredCorrectly: 0, totalQuestions: 0
+            },
+            "Musculoskeletal and Connective Tissue": {
+                questions: [
+                    // NSAIDs
+                    {
+                        drugName: "Ibuprofen/Naproxen (Non-selective NSAIDs)",
+                        question: "Non-selective NSAIDs like Ibuprofen inhibit both COX-1 and COX-2. Inhibition of COX-1 is primarily responsible for which common adverse effect?",
+                        options: ["Anti-inflammatory effect", "Gastrointestinal irritation and ulceration"],
+                        correctAnswer: "Gastrointestinal irritation and ulceration",
+                        explanation: "COX-1 is constitutively expressed and produces prostaglandins that protect the gastric mucosa. Inhibition of COX-1 by NSAIDs reduces this protection, leading to GI side effects. COX-2 inhibition mediates anti-inflammatory effects."
+                    },
+                    {
+                        drugName: "Celecoxib (COX-2 selective NSAID)",
+                        question: "Celecoxib is a COX-2 selective NSAID. Compared to non-selective NSAIDs, it is designed to have a lower risk of:",
+                        options: ["Cardiovascular events", "Gastrointestinal ulceration"],
+                        correctAnswer: "Gastrointestinal ulceration",
+                        explanation: "By selectively inhibiting COX-2 (induced during inflammation) and sparing COX-1, Celecoxib aims to reduce GI toxicity. However, COX-2 inhibitors may carry an increased risk of cardiovascular events."
+                    },
+                    // Gout drugs
+                    {
+                        drugName: "Allopurinol/Febuxostat (Xanthine Oxidase Inhibitors)",
+                        question: "Allopurinol and Febuxostat are used for chronic gout. They lower uric acid levels by inhibiting which enzyme?",
+                        options: ["Uricase", "Xanthine oxidase"],
+                        correctAnswer: "Xanthine oxidase",
+                        explanation: "These drugs inhibit xanthine oxidase, the enzyme that converts hypoxanthine to xanthine and xanthine to uric acid, thereby reducing uric acid production."
+                    },
+                    {
+                        drugName: "Colchicine",
+                        question: "Colchicine is used for acute gout flares. Its anti-inflammatory effect is primarily due to:",
+                        options: ["Inhibition of uric acid synthesis", "Inhibition of microtubule polymerization in neutrophils, reducing their migration and activity"],
+                        correctAnswer: "Inhibition of microtubule polymerization in neutrophils, reducing their migration and activity",
+                        explanation: "Colchicine binds to tubulin, preventing microtubule formation, which impairs neutrophil chemotaxis and phagocytosis, thus reducing inflammation in acute gout. GI side effects are common."
+                    },
+                    {
+                        drugName: "Probenecid (Uricosuric)",
+                        question: "Probenecid increases uric acid excretion by inhibiting which transporter in the renal proximal tubules?",
+                        options: ["Organic anion transporter (OAT)", "Urate transporter 1 (URAT1)"],
+                        correctAnswer: "Urate transporter 1 (URAT1)",
+                        explanation: "Probenecid inhibits URAT1, which is responsible for reabsorbing uric acid from the tubular lumen back into the blood, thereby increasing its excretion. Can precipitate uric acid stones."
+                    },
+                    // Osteoporosis drugs
+                    {
+                        drugName: "Alendronate/Risedronate (Bisphosphonates)",
+                        question: "Bisphosphonates like Alendronate are first-line for osteoporosis. They primarily act by:",
+                        options: ["Stimulating osteoblast activity", "Inhibiting osteoclast-mediated bone resorption"],
+                        correctAnswer: "Inhibiting osteoclast-mediated bone resorption",
+                        explanation: "Bisphosphonates bind to hydroxyapatite in bone and are taken up by osteoclasts, impairing their ability to resorb bone. Esophagitis is a key side effect; patients must remain upright after taking."
+                    },
+                    {
+                        drugName: "Denosumab",
+                        question: "Denosumab is a monoclonal antibody used for osteoporosis. What is its target?",
+                        options: ["Sclerostin", "RANK Ligand (RANKL)"],
+                        correctAnswer: "RANK Ligand (RANKL)",
+                        explanation: "Denosumab binds to RANKL, preventing it from activating RANK on osteoclasts and their precursors, thereby inhibiting osteoclast formation, function, and survival, leading to decreased bone resorption."
+                    }
+                ],
+                progress: 0, answeredCorrectly: 0, totalQuestions: 0
+            },
+             "Hematology and Oncology": {
+                questions: [
+                    // Anemia drugs
+                    {
+                        drugName: "Iron supplements (e.g., Ferrous sulfate)",
+                        question: "Oral iron supplements are used for iron deficiency anemia. What is a common gastrointestinal side effect?",
+                        options: ["Diarrhea", "Constipation and black stools"],
+                        correctAnswer: "Constipation and black stools",
+                        explanation: "Common side effects of oral iron include constipation, nausea, abdominal cramps, and black discoloration of stools (harmless)."
+                    },
+                    {
+                        drugName: "Erythropoietin (Epoetin alfa, Darbepoetin alfa)",
+                        question: "Erythropoiesis-stimulating agents (ESAs) like Epoetin alfa are used for anemia of chronic kidney disease. A potential serious adverse effect is:",
+                        options: ["Hypotension", "Hypertension and thromboembolic events"],
+                        correctAnswer: "Hypertension and thromboembolic events",
+                        explanation: "ESAs stimulate red blood cell production. They can increase blood viscosity and blood pressure, raising the risk of hypertension, stroke, and myocardial infarction, especially if hemoglobin rises too quickly or too high."
+                    },
+                    // Chemotherapy agents - Alkylating agents
+                    {
+                        drugName: "Cyclophosphamide",
+                        question: "Cyclophosphamide is an alkylating agent. A characteristic toxicity that can be prevented by co-administration of Mesna is:",
+                        options: ["Cardiotoxicity", "Hemorrhagic cystitis"],
+                        correctAnswer: "Hemorrhagic cystitis",
+                        explanation: "Acrolein, a metabolite of cyclophosphamide, is toxic to the bladder mucosa and can cause hemorrhagic cystitis. Mesna binds to and inactivates acrolein in the bladder."
+                    },
+                    // Chemotherapy agents - Antimetabolites
+                    {
+                        drugName: "Methotrexate",
+                        question: "Methotrexate is an antimetabolite that inhibits dihydrofolate reductase. Which substance is used as 'rescue' therapy to reduce its toxicity?",
+                        options: ["Folic acid", "Leucovorin (folinic acid)"],
+                        correctAnswer: "Leucovorin (folinic acid)",
+                        explanation: "Methotrexate blocks the conversion of dihydrofolate to tetrahydrofolate, essential for DNA synthesis. Leucovorin is a reduced folate that bypasses this block, rescuing normal cells from toxicity. Myelosuppression, mucositis, hepatotoxicity are key toxicities."
+                    },
+                    // Chemotherapy agents - Antitumor antibiotics
+                    {
+                        drugName: "Doxorubicin (Anthracycline)",
+                        question: "Doxorubicin is an antitumor antibiotic. A major dose-limiting toxicity is:",
+                        options: ["Nephrotoxicity", "Cardiotoxicity (dilated cardiomyopathy)"],
+                        correctAnswer: "Cardiotoxicity (dilated cardiomyopathy)",
+                        explanation: "Doxorubicin and other anthracyclines can cause cumulative, dose-dependent cardiotoxicity, manifesting as dilated cardiomyopathy and heart failure. Dexrazoxane can be used for cardioprotection."
+                    },
+                    // Chemotherapy agents - Microtubule inhibitors
+                    {
+                        drugName: "Vincristine (Vinca alkaloid)",
+                        question: "Vincristine inhibits microtubule polymerization. A prominent and often dose-limiting side effect is:",
+                        options: ["Myelosuppression", "Peripheral neuropathy"],
+                        correctAnswer: "Peripheral neuropathy",
+                        explanation: "Vincristine is known for causing neurotoxicity, particularly peripheral neuropathy (paresthesias, foot drop). Unlike Vinblastine, it is relatively bone marrow sparing."
+                    },
+                    {
+                        drugName: "Paclitaxel (Taxane)",
+                        question: "Paclitaxel stabilizes microtubules, preventing their depolymerization. A common toxicity is:",
+                        options: ["Hemorrhagic cystitis", "Myelosuppression and peripheral neuropathy"],
+                        correctAnswer: "Myelosuppression and peripheral neuropathy",
+                        explanation: "Paclitaxel and other taxanes commonly cause myelosuppression (neutropenia) and peripheral neuropathy. Hypersensitivity reactions can also occur."
+                    },
+                    // Immunosuppressants
+                    {
+                        drugName: "Cyclosporine/Tacrolimus (Calcineurin inhibitors)",
+                        question: "Cyclosporine and Tacrolimus are calcineurin inhibitors used for immunosuppression in organ transplantation. A major shared toxicity is:",
+                        options: ["Pulmonary fibrosis", "Nephrotoxicity"],
+                        correctAnswer: "Nephrotoxicity",
+                        explanation: "Both Cyclosporine and Tacrolimus are highly nephrotoxic. Other toxicities include neurotoxicity, hypertension, and hyperkalemia. Cyclosporine also causes gingival hyperplasia and hirsutism."
+                    },
+                    {
+                        drugName: "Azathioprine",
+                        question: "Azathioprine is an immunosuppressant prodrug that is converted to 6-mercaptopurine. Its metabolism can be affected by co-administration of which gout medication, requiring dose reduction?",
+                        options: ["Colchicine", "Allopurinol"],
+                        correctAnswer: "Allopurinol",
+                        explanation: "Allopurinol inhibits xanthine oxidase, an enzyme involved in the metabolism of 6-mercaptopurine. Concurrent use significantly increases 6-MP levels and toxicity (myelosuppression), requiring a dose reduction of azathioprine."
+                    },
+                    {
+                        drugName: "Mycophenolate mofetil",
+                        question: "Mycophenolate mofetil is an immunosuppressant that inhibits inosine monophosphate dehydrogenase. A common side effect is:",
+                        options: ["Hepatotoxicity", "Gastrointestinal disturbances (e.g., diarrhea) and myelosuppression"],
+                        correctAnswer: "Gastrointestinal disturbances (e.g., diarrhea) and myelosuppression",
+                        explanation: "Mycophenolate selectively inhibits lymphocyte proliferation. GI upset is very common. Myelosuppression, particularly leukopenia, can also occur."
+                    }
+                ],
+                progress: 0, answeredCorrectly: 0, totalQuestions: 0
+            },
+            "Infectious Diseases": {
+                questions: [
+                    // Antibiotics - Cell Wall Synthesis Inhibitors
+                    {
+                        drugName: "Penicillins (e.g., Amoxicillin, Piperacillin)",
+                        question: "Penicillins exert their bactericidal effect by inhibiting which process in bacterial cell wall synthesis?",
+                        options: ["Peptidoglycan cross-linking (transpeptidation)", "Synthesis of peptidoglycan precursors"],
+                        correctAnswer: "Peptidoglycan cross-linking (transpeptidation)",
+                        explanation: "Penicillins bind to penicillin-binding proteins (PBPs), which are transpeptidases, thereby inhibiting the final cross-linking step of peptidoglycan synthesis. Hypersensitivity is a major concern."
+                    },
+                    {
+                        drugName: "Cephalosporins (1st-5th gen)",
+                        question: "Cephalosporins are beta-lactam antibiotics. As one moves from 1st to later generations (e.g., 3rd, 4th), there is generally an increase in:",
+                        options: ["Gram-positive coverage", "Gram-negative coverage and CNS penetration"],
+                        correctAnswer: "Gram-negative coverage and CNS penetration",
+                        explanation: "Later generation cephalosporins (e.g., Ceftriaxone, Cefepime) have broader Gram-negative activity and better CNS penetration. Cross-reactivity with penicillin allergy is possible."
+                    },
+                    {
+                        drugName: "Vancomycin",
+                        question: "Vancomycin is a glycopeptide antibiotic effective against MRSA. A characteristic adverse reaction associated with rapid infusion is:",
+                        options: ["Drug-induced lupus", "Red man syndrome (flushing, erythema, pruritus)"],
+                        correctAnswer: "Red man syndrome (flushing, erythema, pruritus)",
+                        explanation: "Rapid infusion of vancomycin can cause histamine release, leading to 'red man syndrome'. Nephrotoxicity and ototoxicity are other concerns, especially with high doses or co-administration of other toxic drugs."
+                    },
+                    {
+                        drugName: "Carbapenems (e.g., Imipenem, Meropenem)",
+                        question: "Carbapenems are broad-spectrum beta-lactam antibiotics. Imipenem is co-administered with Cilastatin because Cilastatin:",
+                        options: ["Enhances its antibacterial activity", "Inhibits renal dehydropeptidase I, preventing Imipenem's inactivation in the kidney"],
+                        correctAnswer: "Inhibits renal dehydropeptidase I, preventing Imipenem's inactivation in the kidney",
+                        explanation: "Cilastatin prolongs the half-life of Imipenem by preventing its breakdown by renal dehydropeptidase I. Seizures are a potential side effect of carbapenems, especially Imipenem."
+                    },
+                    // Antibiotics - Protein Synthesis Inhibitors
+                    {
+                        drugName: "Tetracyclines (e.g., Doxycycline)",
+                        question: "Tetracyclines bind to the 30S ribosomal subunit. A notable adverse effect, especially in children, is:",
+                        options: ["Ototoxicity", "Tooth discoloration and inhibition of bone growth"],
+                        correctAnswer: "Tooth discoloration and inhibition of bone growth",
+                        explanation: "Tetracyclines can chelate calcium and get incorporated into developing teeth and bones, leading to discoloration and potential growth inhibition. They are contraindicated in pregnancy and children <8 years. Photosensitivity is also common."
+                    },
+                    {
+                        drugName: "Macrolides (e.g., Azithromycin, Erythromycin)",
+                        question: "Macrolides like Erythromycin bind to the 50S ribosomal subunit. A significant cardiac adverse effect is:",
+                        options: ["Bradycardia", "QT prolongation and risk of Torsades de Pointes"],
+                        correctAnswer: "QT prolongation and risk of Torsades de Pointes",
+                        explanation: "Macrolides can prolong the QT interval, increasing the risk of potentially fatal arrhythmias. GI upset is common, and Erythromycin/Clarithromycin are P450 inhibitors."
+                    },
+                    {
+                        drugName: "Aminoglycosides (e.g., Gentamicin, Tobramycin)",
+                        question: "Aminoglycosides are bactericidal protein synthesis inhibitors (30S subunit). Two major dose-limiting toxicities are:",
+                        options: ["Hepatotoxicity and photosensitivity", "Nephrotoxicity and ototoxicity"],
+                        correctAnswer: "Nephrotoxicity and ototoxicity",
+                        explanation: "Aminoglycosides can cause reversible nephrotoxicity and irreversible ototoxicity (both vestibular and cochlear damage). They require oxygen for uptake, so ineffective against anaerobes."
+                    },
+                    {
+                        drugName: "Clindamycin",
+                        question: "Clindamycin binds to the 50S ribosomal subunit and is effective against many anaerobic bacteria. A serious adverse effect associated with its use is:",
+                        options: ["Aplastic anemia", "Pseudomembranous colitis (due to Clostridium difficile overgrowth)"],
+                        correctAnswer: "Pseudomembranous colitis (due to Clostridium difficile overgrowth)",
+                        explanation: "Clindamycin can disrupt normal gut flora, leading to C. difficile overgrowth and toxin production, causing severe diarrhea and colitis."
+                    },
+                    // Antibiotics - DNA/RNA Synthesis Inhibitors
+                    {
+                        drugName: "Fluoroquinolones (e.g., Ciprofloxacin, Levofloxacin)",
+                        question: "Fluoroquinolones inhibit bacterial DNA gyrase and topoisomerase IV. A characteristic musculoskeletal adverse effect is:",
+                        options: ["Myopathy", "Tendonitis and tendon rupture (especially Achilles tendon)"],
+                        correctAnswer: "Tendonitis and tendon rupture (especially Achilles tendon)",
+                        explanation: "Fluoroquinolones have a black box warning for tendon damage. Other concerns include QT prolongation, CNS effects, and cartilage damage (avoid in pregnancy/children)."
+                    },
+                    {
+                        drugName: "Rifampin",
+                        question: "Rifampin is used in tuberculosis treatment and inhibits bacterial DNA-dependent RNA polymerase. A well-known characteristic it imparts to body fluids is:",
+                        options: ["Blue-green discoloration", "Red-orange discoloration"],
+                        correctAnswer: "Red-orange discoloration",
+                        explanation: "Rifampin causes a harmless red-orange discoloration of urine, sweat, tears, and saliva. It is a potent inducer of cytochrome P450 enzymes, leading to many drug interactions."
+                    },
+                    {
+                        drugName: "Metronidazole",
+                        question: "Metronidazole is effective against anaerobic bacteria and protozoa. Patients taking it should be warned to avoid what substance due to a disulfiram-like reaction?",
+                        options: ["Dairy products", "Alcohol"],
+                        correctAnswer: "Alcohol",
+                        explanation: "Metronidazole can cause a disulfiram-like reaction (flushing, nausea, vomiting, headache) when taken with alcohol due to inhibition of aldehyde dehydrogenase."
+                    },
+                     // Antibiotics - Folate Synthesis Inhibitors
+                    {
+                        drugName: "Trimethoprim-Sulfamethoxazole (TMP-SMX)",
+                        question: "Sulfamethoxazole (a sulfonamide) inhibits dihydropteroate synthase, while Trimethoprim inhibits dihydrofolate reductase. A potential adverse effect related to sulfonamides is:",
+                        options: ["Ototoxicity", "Stevens-Johnson syndrome (SJS) and G6PD hemolysis"],
+                        correctAnswer: "Stevens-Johnson syndrome (SJS) and G6PD hemolysis",
+                        explanation: "Sulfonamides can cause severe hypersensitivity reactions like SJS/TEN, photosensitivity, and hemolysis in patients with G6PD deficiency. TMP can cause megaloblastic anemia."
+                    },
+                    // Antivirals - HIV drugs
+                    {
+                        drugName: "Zidovudine (AZT) - NRTI",
+                        question: "Zidovudine is a nucleoside reverse transcriptase inhibitor (NRTI) used in HIV therapy. A significant hematological toxicity is:",
+                        options: ["Thrombocytopenia", "Bone marrow suppression (anemia, neutropenia)"],
+                        correctAnswer: "Bone marrow suppression (anemia, neutropenia)",
+                        explanation: "NRTIs competitively inhibit HIV reverse transcriptase after phosphorylation. Zidovudine is particularly known for causing myelosuppression."
+                    },
+                    {
+                        drugName: "Efavirenz - NNRTI",
+                        question: "Efavirenz is a non-nucleoside reverse transcriptase inhibitor (NNRTI). A common type of adverse effect associated with it is:",
+                        options: ["Peripheral neuropathy", "Central nervous system (CNS) side effects (e.g., dizziness, vivid dreams, depression)"],
+                        correctAnswer: "Central nervous system (CNS) side effects (e.g., dizziness, vivid dreams, depression)",
+                        explanation: "NNRTIs directly bind to and inhibit reverse transcriptase. Efavirenz is known for its CNS side effects, which often improve over time. It's also a teratogen."
+                    },
+                    {
+                        drugName: "Ritonavir/Lopinavir - Protease Inhibitors (PIs)",
+                        question: "HIV Protease Inhibitors like Ritonavir prevent the cleavage of viral polyproteins. A common metabolic side effect profile includes:",
+                        options: ["Hypoglycemia and weight loss", "Hyperglycemia, dyslipidemia (hypertriglyceridemia, hypercholesterolemia), and lipodystrophy"],
+                        correctAnswer: "Hyperglycemia, dyslipidemia (hypertriglyceridemia, hypercholesterolemia), and lipodystrophy",
+                        explanation: "PIs are associated with significant metabolic complications. Ritonavir is often used as a 'booster' due to its potent P450 inhibition, increasing levels of other PIs."
+                    },
+                     // Antivirals - Herpesviruses
+                    {
+                        drugName: "Acyclovir/Valacyclovir",
+                        question: "Acyclovir is used for herpesvirus infections. It requires phosphorylation by which viral enzyme to become active?",
+                        options: ["Viral DNA polymerase", "Viral thymidine kinase (TK)"],
+                        correctAnswer: "Viral thymidine kinase (TK)",
+                        explanation: "Acyclovir is a prodrug that is selectively phosphorylated by herpesvirus-encoded thymidine kinase. It then inhibits viral DNA polymerase. Nephrotoxicity can occur, especially with IV administration if not well hydrated."
+                    },
+                    // Antivirals - Influenza
+                    {
+                        drugName: "Oseltamivir/Zanamivir (Neuraminidase Inhibitors)",
+                        question: "Oseltamivir (Tamiflu) and Zanamivir are neuraminidase inhibitors used for influenza. They work by:",
+                        options: ["Preventing viral entry into host cells", "Preventing the release of newly formed virus particles from infected cells"],
+                        correctAnswer: "Preventing the release of newly formed virus particles from infected cells",
+                        explanation: "Neuraminidase is essential for cleaving sialic acid residues and releasing progeny virions. Inhibiting it traps viruses on the cell surface. Most effective if started within 48 hours of symptom onset."
+                    },
+                    // Antifungals
+                    {
+                        drugName: "Amphotericin B",
+                        question: "Amphotericin B is a broad-spectrum antifungal that binds to ergosterol in fungal cell membranes. Its use is often limited by:",
+                        options: ["Hepatotoxicity", "Severe nephrotoxicity and infusion-related reactions (fever, chills)"],
+                        correctAnswer: "Severe nephrotoxicity and infusion-related reactions (fever, chills)",
+                        explanation: "Amphotericin B ('ampho-terrible') is highly toxic, causing nephrotoxicity (vasoconstriction of afferent arterioles, direct tubular damage), electrolyte disturbances (hypokalemia, hypomagnesemia), and acute infusion reactions ('shake and bake')."
+                    },
+                    {
+                        drugName: "Fluconazole/Itraconazole (Azoles)",
+                        question: "Azole antifungals inhibit fungal cytochrome P450 enzymes, specifically 14-alpha-demethylase. This leads to impaired synthesis of:",
+                        options: ["Chitin", "Ergosterol"],
+                        correctAnswer: "Ergosterol",
+                        explanation: "By inhibiting ergosterol synthesis, azoles disrupt fungal cell membrane integrity. They are also P450 inhibitors, leading to many drug interactions. Hepatotoxicity is a concern."
+                    },
+                    {
+                        drugName: "Nystatin",
+                        question: "Nystatin is a polyene antifungal similar to Amphotericin B but is used topically. For which type of fungal infection is it commonly prescribed?",
+                        options: ["Systemic aspergillosis", "Oropharyngeal or cutaneous candidiasis (thrush, diaper rash)"],
+                        correctAnswer: "Oropharyngeal or cutaneous candidiasis (thrush, diaper rash)",
+                        explanation: "Nystatin is too toxic for systemic use but is effective topically ('swish and swallow' for oral thrush) as it is not absorbed from the GI tract."
+                    },
+                    {
+                        drugName: "Caspofungin/Micafungin (Echinocandins)",
+                        question: "Echinocandins like Caspofungin are a class of antifungals that inhibit the synthesis of:",
+                        options: ["Fungal cell membrane ergosterol", "Fungal cell wall β-(1,3)-D-glucan"],
+                        correctAnswer: "Fungal cell wall β-(1,3)-D-glucan",
+                        explanation: "Echinocandins inhibit the enzyme β-(1,3)-D-glucan synthase, disrupting fungal cell wall integrity. They are generally well-tolerated and effective against Candida and Aspergillus."
+                    }
+                ],
+                progress: 0, answeredCorrectly: 0, totalQuestions: 0
+            },
+            "Central Nervous System (CNS) and Psychiatry": {
+                questions: [
+                    // Antidepressants - SSRIs
+                    {
+                        drugName: "Fluoxetine/Sertraline (SSRIs)",
+                        question: "Selective Serotonin Reuptake Inhibitors (SSRIs) are first-line for depression. A common early side effect is:",
+                        options: ["Weight gain", "Nausea and GI upset"],
+                        correctAnswer: "Nausea and GI upset",
+                        explanation: "SSRIs increase serotonin levels. GI side effects are common initially. Sexual dysfunction is a common long-term side effect. Risk of serotonin syndrome with other serotonergic drugs."
+                    },
+                    // Antidepressants - SNRIs
+                    {
+                        drugName: "Venlafaxine/Duloxetine (SNRIs)",
+                        question: "Serotonin-Norepinephrine Reuptake Inhibitors (SNRIs) like Venlafaxine can cause which cardiovascular side effect, particularly at higher doses?",
+                        options: ["Orthostatic hypotension", "Increased blood pressure (hypertension)"],
+                        correctAnswer: "Increased blood pressure (hypertension)",
+                        explanation: "Due to norepinephrine reuptake inhibition, SNRIs can increase blood pressure and heart rate. Duloxetine is also used for neuropathic pain."
+                    },
+                    // Antidepressants - TCAs
+                    {
+                        drugName: "Amitriptyline/Imipramine (TCAs)",
+                        question: "Tricyclic Antidepressants (TCAs) have a narrow therapeutic index and can cause cardiotoxicity in overdose. This is primarily due to blockade of:",
+                        options: ["Dopamine receptors", "Cardiac fast sodium channels (leading to QRS prolongation)"],
+                        correctAnswer: "Cardiac fast sodium channels (leading to QRS prolongation)",
+                        explanation: "TCAs also block muscarinic, histamine H1, and alpha-1 adrenergic receptors, leading to anticholinergic effects, sedation, and orthostatic hypotension. The Na+ channel blockade is most dangerous in overdose."
+                    },
+                    // Antidepressants - MAOIs
+                    {
+                        drugName: "Phenelzine/Tranylcypromine (MAOIs)",
+                        question: "Monoamine Oxidase Inhibitors (MAOIs) can cause a hypertensive crisis if co-ingested with:",
+                        options: ["Foods high in tyramine (e.g., aged cheese, red wine)", "Grapefruit juice"],
+                        correctAnswer: "Foods high in tyramine (e.g., aged cheese, red wine)",
+                        explanation: "MAOIs prevent the breakdown of tyramine, a sympathomimetic amine. Ingesting tyramine-rich foods can lead to a massive release of norepinephrine and a hypertensive crisis. Also many drug interactions (e.g., SSRIs, sympathomimetics)."
+                    },
+                    // Antidepressants - Atypical
+                    {
+                        drugName: "Bupropion",
+                        question: "Bupropion is an atypical antidepressant that inhibits norepinephrine and dopamine reuptake. It is contraindicated in patients with a history of:",
+                        options: ["Hypertension", "Seizure disorders or eating disorders (bulimia, anorexia)"],
+                        correctAnswer: "Seizure disorders or eating disorders (bulimia, anorexia)",
+                        explanation: "Bupropion lowers the seizure threshold. It has less sexual dysfunction than SSRIs and is also used for smoking cessation."
+                    },
+                    {
+                        drugName: "Mirtazapine",
+                        question: "Mirtazapine is an atypical antidepressant that antagonizes presynaptic alpha-2 receptors and postsynaptic 5-HT2/5-HT3 receptors. Common side effects include:",
+                        options: ["Insomnia and anxiety", "Sedation and weight gain"],
+                        correctAnswer: "Sedation and weight gain",
+                        explanation: "Mirtazapine's potent H1 antagonism causes sedation (often dosed at bedtime), and it is also associated with increased appetite and weight gain."
+                    },
+                    // Antipsychotics - Typical (1st Gen)
+                    {
+                        drugName: "Haloperidol/Chlorpromazine (Typical Antipsychotics)",
+                        question: "Typical (first-generation) antipsychotics primarily block which dopamine receptor pathway, leading to their antipsychotic effects and risk of extrapyramidal symptoms (EPS)?",
+                        options: ["Mesocortical pathway (D2 blockade)", "Mesolimbic pathway (D2 blockade)"],
+                        correctAnswer: "Mesolimbic pathway (D2 blockade)",
+                        explanation: "D2 receptor blockade in the mesolimbic pathway reduces positive symptoms of psychosis. Blockade in the nigrostriatal pathway causes EPS. Blockade in tuberoinfundibular pathway causes hyperprolactinemia."
+                    },
+                    // Antipsychotics - Atypical (2nd Gen)
+                    {
+                        drugName: "Risperidone/Olanzapine/Clozapine (Atypical Antipsychotics)",
+                        question: "Atypical (second-generation) antipsychotics generally have a lower risk of EPS than typicals. Clozapine, though highly effective, requires regular monitoring due to the risk of:",
+                        options: ["Tardive dyskinesia", "Agranulocytosis"],
+                        correctAnswer: "Agranulocytosis",
+                        explanation: "Clozapine can cause severe neutropenia (agranulocytosis), requiring frequent WBC monitoring. Atypicals also carry a risk of metabolic syndrome (weight gain, dyslipidemia, diabetes), especially Olanzapine and Clozapine."
+                    },
+                    // Mood Stabilizers
+                    {
+                        drugName: "Lithium",
+                        question: "Lithium is a mood stabilizer for bipolar disorder. It has a narrow therapeutic index and can cause which renal and thyroid side effects?",
+                        options: ["Acute kidney injury and hyperthyroidism", "Nephrogenic diabetes insipidus and hypothyroidism"],
+                        correctAnswer: "Nephrogenic diabetes insipidus and hypothyroidism",
+                        explanation: "Lithium can impair the kidney's ability to concentrate urine (nephrogenic DI) and interfere with thyroid hormone synthesis (hypothyroidism). Tremor, GI upset, and teratogenicity (Ebstein anomaly) are other concerns."
+                    },
+                    {
+                        drugName: "Valproate (Valproic Acid)",
+                        question: "Valproate is a mood stabilizer and antiepileptic. A serious potential toxicity, especially in young children, is:",
+                        options: ["Aplastic anemia", "Hepatotoxicity and pancreatitis"],
+                        correctAnswer: "Hepatotoxicity and pancreatitis",
+                        explanation: "Valproate can cause fatal hepatotoxicity (highest risk in children <2 years on multiple AEDs) and pancreatitis. It is also a known teratogen (neural tube defects)."
+                    },
+                    // Anxiolytics/Hypnotics - Benzodiazepines
+                    {
+                        drugName: "Diazepam/Lorazepam (Benzodiazepines)",
+                        question: "Benzodiazepines enhance the effect of GABA at the GABA-A receptor, increasing the frequency of chloride channel opening. What is a major risk with their use, especially if combined with alcohol or opioids?",
+                        options: ["Paradoxical agitation", "Respiratory depression and sedation"],
+                        correctAnswer: "Respiratory depression and sedation",
+                        explanation: "Benzodiazepines are CNS depressants. Combining them with other depressants like alcohol or opioids can lead to severe respiratory depression, coma, and death. Dependence and withdrawal are also significant issues."
+                    },
+                    // Anxiolytics/Hypnotics - Non-benzodiazepine hypnotics
+                    {
+                        drugName: "Zolpidem (Z-drug)",
+                        question: "Zolpidem is a non-benzodiazepine hypnotic that acts selectively on GABA-A receptors containing alpha-1 subunits. Compared to benzodiazepines, it generally has:",
+                        options: ["Longer duration of action and more anxiolytic effect", "Shorter duration of action and less anxiolytic/muscle relaxant effect, primarily used for insomnia"],
+                        correctAnswer: "Shorter duration of action and less anxiolytic/muscle relaxant effect, primarily used for insomnia",
+                        explanation: "Z-drugs (Zolpidem, Zaleplon, Eszopiclone) are primarily used for sleep onset insomnia. They have a lower risk of dependence and withdrawal than benzodiazepines but can still cause complex sleep behaviors."
+                    },
+                    // Antiepileptic Drugs (AEDs)
+                    {
+                        drugName: "Phenytoin",
+                        question: "Phenytoin is an AED that blocks Na+ channels. A characteristic side effect related to its metabolism and long-term use is:",
+                        options: ["Weight loss", "Gingival hyperplasia, hirsutism, and osteomalacia"],
+                        correctAnswer: "Gingival hyperplasia, hirsutism, and osteomalacia",
+                        explanation: "Phenytoin exhibits zero-order kinetics at higher doses. Long-term effects include gingival hyperplasia, hirsutism, megaloblastic anemia (folate deficiency), osteomalacia, and cerebellar ataxia. It's also a teratogen (fetal hydantoin syndrome)."
+                    },
+                    {
+                        drugName: "Carbamazepine",
+                        question: "Carbamazepine is an AED also used for trigeminal neuralgia and bipolar disorder. A serious idiosyncratic adverse effect is:",
+                        options: ["Nephrotoxicity", "Aplastic anemia and Stevens-Johnson syndrome (especially in HLA-B*1502 positive Asians)"],
+                        correctAnswer: "Aplastic anemia and Stevens-Johnson syndrome (especially in HLA-B*1502 positive Asians)",
+                        explanation: "Carbamazepine can cause bone marrow suppression (aplastic anemia, agranulocytosis) and severe skin reactions like SJS/TEN. It's also a P450 inducer and can cause SIADH (hyponatremia)."
+                    },
+                    {
+                        drugName: "Levetiracetam",
+                        question: "Levetiracetam is a broad-spectrum AED with an unknown primary mechanism. Compared to older AEDs, it is generally known for:",
+                        options: ["Significant P450 enzyme interactions", "Fewer drug interactions and a relatively favorable side effect profile (though behavioral changes can occur)"],
+                        correctAnswer: "Fewer drug interactions and a relatively favorable side effect profile (though behavioral changes can occur)",
+                        explanation: "Levetiracetam (Keppra) is widely used due to its efficacy and better tolerability/safety profile compared to many older AEDs. Psychiatric/behavioral side effects (irritability, agitation) can occur."
+                    },
+                    {
+                        drugName: "Ethosuximide",
+                        question: "Ethosuximide is the first-line treatment for which type of seizures?",
+                        options: ["Generalized tonic-clonic seizures", "Absence seizures (petit mal)"],
+                        correctAnswer: "Absence seizures (petit mal)",
+                        explanation: "Ethosuximide blocks T-type calcium channels in thalamic neurons, which are involved in generating the spike-and-wave discharges characteristic of absence seizures. GI upset is common."
+                    },
+                    // Parkinson's Disease drugs
+                    {
+                        drugName: "Levodopa/Carbidopa",
+                        question: "Levodopa is a precursor to dopamine used in Parkinson's disease. Why is it co-administered with Carbidopa?",
+                        options: ["Carbidopa enhances Levodopa's CNS penetration by inhibiting its breakdown in the GI tract", "Carbidopa inhibits peripheral DOPA decarboxylase, reducing peripheral conversion of Levodopa to dopamine and thus reducing side effects and increasing CNS availability"],
+                        correctAnswer: "Carbidopa inhibits peripheral DOPA decarboxylase, reducing peripheral conversion of Levodopa to dopamine and thus reducing side effects and increasing CNS availability",
+                        explanation: "Carbidopa does not cross the BBB but prevents peripheral decarboxylation of Levodopa, allowing more Levodopa to reach the brain and reducing peripheral side effects like nausea/vomiting. Long-term use associated with 'on-off' phenomenon and dyskinesias."
+                    },
+                    {
+                        drugName: "Ropinirole/Pramipexole (Dopamine Agonists)",
+                        question: "Dopamine agonists like Ropinirole directly stimulate dopamine receptors. Compared to Levodopa, they generally have:",
+                        options: ["Higher efficacy for motor symptoms but more dyskinesias", "Lower efficacy for motor symptoms but less risk of motor fluctuations and dyskinesias initially; higher risk of impulse control disorders"],
+                        correctAnswer: "Lower efficacy for motor symptoms but less risk of motor fluctuations and dyskinesias initially; higher risk of impulse control disorders",
+                        explanation: "Dopamine agonists can be used as monotherapy in early Parkinson's or as adjuncts to Levodopa. They have a longer half-life than Levodopa. Side effects include nausea, orthostatic hypotension, hallucinations, and impulse control disorders (e.g., gambling)."
+                    },
+                    // Alzheimer's Disease drugs
+                    {
+                        drugName: "Donepezil/Rivastigmine/Galantamine (Cholinesterase Inhibitors)",
+                        question: "Cholinesterase inhibitors are used for mild to moderate Alzheimer's disease to improve cognitive function by:",
+                        options: ["Increasing dopamine levels in the brain", "Increasing acetylcholine levels in the synaptic cleft"],
+                        correctAnswer: "Increasing acetylcholine levels in the synaptic cleft",
+                        explanation: "These drugs inhibit the breakdown of acetylcholine, a neurotransmitter important for memory and cognition that is deficient in Alzheimer's disease. GI side effects are common."
+                    },
+                    {
+                        drugName: "Memantine",
+                        question: "Memantine is used for moderate to severe Alzheimer's disease. It acts as an antagonist at which receptor?",
+                        options: ["Muscarinic acetylcholine receptors", "NMDA (N-methyl-D-aspartate) glutamate receptors"],
+                        correctAnswer: "NMDA (N-methyl-D-aspartate) glutamate receptors",
+                        explanation: "Memantine is a non-competitive NMDA receptor antagonist, thought to protect against glutamate-mediated excitotoxicity, which may contribute to neuronal dysfunction in Alzheimer's. Generally well-tolerated."
+                    }
+                ],
+                progress: 0, answeredCorrectly: 0, totalQuestions: 0
+            },
+            "Immunology": {
+                questions: [
+                    // Immunosuppressants (some overlap with Oncology, re-emphasize immunology context)
+                    {
+                        drugName: "Cyclosporine",
+                        question: "Cyclosporine is an immunosuppressant that inhibits calcineurin, thereby preventing the transcription of which key cytokine involved in T-cell activation?",
+                        options: ["Tumor Necrosis Factor-alpha (TNF-α)", "Interleukin-2 (IL-2)"],
+                        correctAnswer: "Interleukin-2 (IL-2)",
+                        explanation: "By inhibiting calcineurin, Cyclosporine (and Tacrolimus) blocks the dephosphorylation of NFAT, preventing IL-2 gene transcription. IL-2 is crucial for T-cell proliferation and differentiation. Nephrotoxicity is a major side effect."
+                    },
+                    {
+                        drugName: "Tacrolimus (FK506)",
+                        question: "Tacrolimus is a calcineurin inhibitor similar to Cyclosporine but binds to a different immunophilin (FKBP-12). Compared to Cyclosporine, it is generally associated with:",
+                        options: ["Less nephrotoxicity but more hirsutism", "More neurotoxicity and risk of diabetes, but less gingival hyperplasia and hirsutism"],
+                        correctAnswer: "More neurotoxicity and risk of diabetes, but less gingival hyperplasia and hirsutism",
+                        explanation: "Both are nephrotoxic. Tacrolimus has a higher incidence of neurotoxicity and new-onset diabetes after transplantation, while Cyclosporine is more associated with gingival hyperplasia and hirsutism."
+                    },
+                    {
+                        drugName: "Sirolimus (Rapamycin)",
+                        question: "Sirolimus is an mTOR inhibitor used for immunosuppression. It primarily blocks T-cell proliferation in response to:",
+                        options: ["Antigen presentation by APCs", "IL-2 signaling"],
+                        correctAnswer: "IL-2 signaling",
+                        explanation: "Sirolimus binds to FKBP-12, and this complex inhibits mTOR (mammalian Target Of Rapamycin), a kinase crucial for cell growth and proliferation driven by IL-2. Can cause hyperlipidemia and myelosuppression."
+                    },
+                    // Biologics
+                    {
+                        drugName: "Infliximab/Adalimumab/Etanercept (TNF-α inhibitors)",
+                        question: "TNF-α inhibitors are used for various autoimmune diseases (e.g., RA, IBD). A significant risk associated with their use is:",
+                        options: ["Increased risk of viral infections only", "Increased risk of infections (bacterial, fungal, reactivation of latent TB) and potential for lymphoma"],
+                        correctAnswer: "Increased risk of infections (bacterial, fungal, reactivation of latent TB) and potential for lymphoma",
+                        explanation: "TNF-α is a key cytokine in inflammation and host defense. Blocking it increases susceptibility to various infections. Patients should be screened for TB before starting therapy."
+                    },
+                    {
+                        drugName: "Rituximab",
+                        question: "Rituximab is a monoclonal antibody that targets CD20 on B-cells. It is used in certain lymphomas and autoimmune diseases by causing:",
+                        options: ["B-cell activation and proliferation", "B-cell depletion"],
+                        correctAnswer: "B-cell depletion",
+                        explanation: "Rituximab binds to CD20, leading to B-cell lysis via complement-dependent cytotoxicity (CDC) and antibody-dependent cell-mediated cytotoxicity (ADCC). Infusion reactions and risk of PML (Progressive Multifocal Leukoencephalopathy) are concerns."
+                    }
+                    // Vaccines (general concept)
+                    // This section is harder to make into 2-option MCQs without specific vaccine examples.
+                    // If you want vaccine questions, please provide specific vaccine types/names from your source.
+                ],
+                progress: 0, answeredCorrectly: 0, totalQuestions: 0
+            }
+        };
+
+        let currentSystem = null;
+        let currentQuestionIndex = 0;
+
+        const organSystemsNav = document.getElementById('organSystemsNav');
+        const questionModule = document.getElementById('questionModule');
+        const feedbackModule = document.getElementById('feedbackModule');
+        const currentSystemTitle = document.getElementById('currentSystemTitle');
+        const progressBarsContainer = document.getElementById('progressBarsContainer');
+        const mobileMenuButton = document.getElementById('mobileMenuButton');
+        const closeMobileMenuButton = document.getElementById('closeMobileMenuButton');
+
+
+        function displayOrganSystems() {
+            const navFragment = document.createDocumentFragment();
+            // Clear previous items except for the title and close button if they exist
+            const existingItems = organSystemsNav.querySelectorAll('.sidebar-item');
+            existingItems.forEach(item => item.remove());
+            
+            Object.keys(pharmacologyData).forEach(systemName => {
+                const system = pharmacologyData[systemName];
+                system.totalQuestions = system.questions.length; 
+
+                const button = document.createElement('button');
+                button.textContent = systemName;
+                button.classList.add('block', 'w-full', 'text-left', 'px-4', 'py-3', 'rounded-md', 'text-gray-700', 'sidebar-item');
+                button.onclick = () => loadSystemQuestions(systemName);
+                navFragment.appendChild(button);
+            });
+            organSystemsNav.appendChild(navFragment);
+        }
+
+        function updateActiveSystemButton(activeSystemName) {
+            const buttons = organSystemsNav.querySelectorAll('.sidebar-item');
+            buttons.forEach(btn => {
+                if (btn.textContent === activeSystemName) {
+                    btn.classList.add('active');
+                } else {
+                    btn.classList.remove('active');
+                }
+            });
+        }
+        
+        function loadSystemQuestions(systemName) {
+            currentSystem = systemName;
+            currentQuestionIndex = 0; 
+            currentSystemTitle.textContent = systemName;
+            feedbackModule.innerHTML = ''; 
+            displayQuestion(pharmacologyData[currentSystem].questions[currentQuestionIndex]);
+            updateActiveSystemButton(systemName);
+            if (window.innerWidth < 768) { 
+                organSystemsNav.classList.add('-translate-x-full');
+                organSystemsNav.classList.remove('md:translate-x-0'); // Ensure mobile specific class is managed
+            }
+        }
+
+        function displayQuestion(questionObj) {
+            if (!questionObj) {
+                questionModule.innerHTML = `<p class="text-gray-600">No more questions in this section. Select another system or reset progress (feature to be added).</p>`;
+                return;
+            }
+
+            questionModule.innerHTML = `
+                <p class="text-lg font-medium mb-1 text-gray-700">Drug: ${questionObj.drugName}</p>
+                <p class="text-md mb-4 text-gray-600">${questionObj.question}</p>
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                    <button class="answer-btn bg-indigo-500 hover:bg-indigo-600 text-white font-semibold py-3 px-4 rounded-lg shadow focus:outline-none focus:ring-2 focus:ring-indigo-400" onclick="handleAnswer(this.textContent, '${currentSystem}', ${currentQuestionIndex})">${questionObj.options[0]}</button>
+                    <button class="answer-btn bg-purple-500 hover:bg-purple-600 text-white font-semibold py-3 px-4 rounded-lg shadow focus:outline-none focus:ring-2 focus:ring-purple-400" onclick="handleAnswer(this.textContent, '${currentSystem}', ${currentQuestionIndex})">${questionObj.options[1]}</button>
+                </div>
+            `;
+            feedbackModule.innerHTML = ''; 
+        }
+
+        function handleAnswer(selectedOptionText, systemName, questionIdx) {
+            const questionObj = pharmacologyData[systemName].questions[questionIdx];
+            const isCorrect = selectedOptionText === questionObj.correctAnswer;
+
+            let feedbackHTML = '';
+            if (isCorrect) {
+                pharmacologyData[systemName].answeredCorrectly++;
+                feedbackHTML = `
+                    <div class="p-4 rounded-md feedback-correct">
+                        <p class="font-semibold text-lg">Correct!</p>
+                    </div>
+                `;
+            } else {
+                feedbackHTML = `
+                    <div class="p-4 rounded-md feedback-incorrect">
+                        <p class="font-semibold text-lg">Incorrect.</p>
+                    </div>
+                `;
+            }
+            
+            feedbackHTML += `
+                <div class="mt-3 p-4 bg-gray-50 rounded-md border border-gray-200">
+                    <p class="font-semibold text-gray-700">The correct answer is: <span class="text-indigo-600">${questionObj.correctAnswer}</span></p>
+                    <p class="mt-1 text-sm text-gray-600">${questionObj.explanation}</p>
+                </div>
+                <button class="mt-4 bg-gray-600 hover:bg-gray-700 text-white font-semibold py-2 px-4 rounded-lg shadow focus:outline-none focus:ring-2 focus:ring-gray-500" onclick="loadNextQuestion('${systemName}')">Next Question</button>
+            `;
+            feedbackModule.innerHTML = feedbackHTML;
+
+            const answerButtons = questionModule.querySelectorAll('.answer-btn');
+            answerButtons.forEach(button => button.disabled = true);
+            
+            updateProgress(systemName);
+        }
+
+        function loadNextQuestion(systemName) {
+            currentQuestionIndex++;
+            if (currentQuestionIndex < pharmacologyData[systemName].questions.length) {
+                displayQuestion(pharmacologyData[systemName].questions[currentQuestionIndex]);
+            } else {
+                questionModule.innerHTML = `<p class="text-gray-600 font-semibold">You've completed all questions for ${systemName}!</p>
+                                            <p class="text-gray-500 mt-2">Select another system to continue learning.</p>`;
+                feedbackModule.innerHTML = '';
+            }
+        }
+        
+        function updateProgress(systemName) {
+            const system = pharmacologyData[systemName];
+            if (system.totalQuestions > 0) {
+                 system.progress = Math.round((system.answeredCorrectly / system.totalQuestions) * 100);
+            } else {
+                system.progress = 0;
+            }
+            displayProgressTrackers();
+        }
+
+        function displayProgressTrackers() {
+            progressBarsContainer.innerHTML = ''; 
+            Object.keys(pharmacologyData).forEach(systemName => {
+                const system = pharmacologyData[systemName];
+                const progressBarHTML = `
+                    <div>
+                        <div class="flex justify-between mb-1">
+                            <span class="text-sm font-medium text-gray-700">${systemName}</span>
+                            <span class="text-sm font-medium text-indigo-600">${system.progress}% (${system.answeredCorrectly}/${system.totalQuestions})</span>
+                        </div>
+                        <div class="w-full bg-gray-200 rounded-full h-2.5">
+                            <div class="bg-indigo-500 h-2.5 rounded-full" style="width: ${system.progress}%"></div>
+                        </div>
+                    </div>
+                `;
+                progressBarsContainer.innerHTML += progressBarHTML;
+            });
+        }
+        
+        function initApp() {
+            displayOrganSystems();
+            displayProgressTrackers(); 
+            questionModule.innerHTML = `<p class="text-gray-600 text-center py-10">Welcome! Please select an organ system from the navigation to begin your pharmacology quiz.</p>`;
+
+            mobileMenuButton.addEventListener('click', () => {
+                organSystemsNav.classList.remove('-translate-x-full');
+                 organSystemsNav.classList.remove('md:translate-x-0'); // Ensure mobile specific class is managed for opening
+            });
+            closeMobileMenuButton.addEventListener('click', () => {
+                organSystemsNav.classList.add('-translate-x-full');
+                organSystemsNav.classList.remove('md:translate-x-0'); // Ensure mobile specific class is managed for closing
+            });
+        }
+
+        document.addEventListener('DOMContentLoaded', initApp);
+    </script>
+
+</body>
+</html>
