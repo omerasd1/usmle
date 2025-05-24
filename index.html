@@ -1,0 +1,245 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>USMLE Step 1 Prep Hub</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #f0f4f8; /* Light blue-gray background */
+        }
+        .hero-section {
+            background: linear-gradient(135deg, #3B82F6 0%, #8B5CF6 100%); /* Blue to Purple gradient */
+        }
+        .btn-primary {
+            transition: background-color 0.3s ease, transform 0.2s ease;
+        }
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+        }
+        .nav-link {
+            transition: color 0.3s ease;
+        }
+        .nav-link:hover {
+            color: #4F46E5; /* Indigo-600 */
+        }
+        .feature-card {
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+        .feature-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 20px rgba(0,0,0,0.1);
+        }
+        .subject-card {
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+        .subject-card:hover {
+            transform: scale(1.05);
+            box-shadow: 0 8px 25px rgba(79, 70, 229, 0.2); /* Indigo shadow on hover */
+        }
+    </style>
+</head>
+<body class="text-gray-800">
+
+    <header class="bg-white shadow-md sticky top-0 z-50">
+        <div class="container mx-auto px-6 py-4 flex justify-between items-center">
+            <a href="#" class="text-3xl font-bold text-indigo-700">Step 1 Hub</a>
+            <nav class="hidden md:flex space-x-8">
+                <a href="#" class="nav-link text-gray-600 font-medium">Home</a>
+                <a href="#subjects" class="nav-link text-gray-600 font-medium">Subjects</a>
+                <a href="usmle_pharm_tool.html" class="nav-link text-indigo-600 font-semibold">Pharmacology Quiz</a>
+                <a href="#" class="nav-link text-gray-600 font-medium">Resources</a>
+                <a href="#" class="nav-link text-gray-600 font-medium">About</a>
+            </nav>
+            <button id="mobileMenuButton" class="md:hidden p-2 rounded-md text-gray-500 hover:text-indigo-600 focus:outline-none">
+                <svg class="h-6 w-6" stroke="currentColor" fill="none" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16m-7 6h7" />
+                </svg>
+            </button>
+        </div>
+        <div id="mobileMenu" class="md:hidden hidden bg-white shadow-lg">
+            <a href="#" class="block px-6 py-3 text-gray-600 hover:bg-indigo-50">Home</a>
+            <a href="#subjects" class="block px-6 py-3 text-gray-600 hover:bg-indigo-50">Subjects</a>
+            <a href="usmle_pharm_tool.html" class="block px-6 py-3 text-indigo-600 font-semibold hover:bg-indigo-50">Pharmacology Quiz</a>
+            <a href="#" class="block px-6 py-3 text-gray-600 hover:bg-indigo-50">Resources</a>
+            <a href="#" class="block px-6 py-3 text-gray-600 hover:bg-indigo-50">About</a>
+        </div>
+    </header>
+
+    <section class="hero-section text-white py-20 md:py-32">
+        <div class="container mx-auto px-6 text-center">
+            <h2 class="text-4xl md:text-5xl font-extrabold mb-6 leading-tight">
+                Conquer the USMLE Step 1 Exam
+            </h2>
+            <p class="text-lg md:text-xl mb-10 max-w-3xl mx-auto">
+                Your ultimate resource hub for mastering all subjects required for the USMLE Step 1. Interactive tools, comprehensive guides, and proven strategies.
+            </p>
+            <a href="#subjects" 
+               class="btn-primary bg-yellow-400 hover:bg-yellow-500 text-indigo-800 font-semibold py-4 px-10 rounded-lg text-lg shadow-lg">
+                Explore Subjects
+            </a>
+        </div>
+    </section>
+
+    <section id="subjects" class="py-16 bg-gray-50">
+        <div class="container mx-auto px-6">
+            <h3 class="text-3xl font-bold text-center text-gray-800 mb-16">Master Key Step 1 Subjects</h3>
+            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-10">
+                <div class="subject-card bg-white p-8 rounded-xl shadow-lg border border-indigo-200">
+                    <div class="flex items-center justify-center h-16 w-16 bg-indigo-100 text-indigo-600 rounded-full mb-6 mx-auto">
+                        <svg class="h-8 w-8" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-3 7h3m-3 4h3m-6-4h.01M9 16h.01" />
+                        </svg>
+                    </div>
+                    <h4 class="text-2xl font-semibold text-gray-700 mb-4 text-center">Pharmacology</h4>
+                    <p class="text-gray-600 text-center mb-6">
+                        Interactive quizzes and detailed explanations to master drug mechanisms, uses, and side effects.
+                    </p>
+                    <a href="pharma.html" class="block w-full text-center btn-primary bg-indigo-600 hover:bg-indigo-700 text-white font-medium py-3 px-6 rounded-lg">
+                        Go to Pharmacology Quiz
+                    </a>
+                </div>
+
+                <div class="subject-card bg-white p-8 rounded-xl shadow-lg border border-gray-200">
+                     <div class="flex items-center justify-center h-16 w-16 bg-blue-100 text-blue-600 rounded-full mb-6 mx-auto">
+                        <svg class="h-8 w-8" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z" />
+                        </svg>
+                    </div>
+                    <h4 class="text-2xl font-semibold text-gray-700 mb-4 text-center">Anatomy</h4>
+                    <p class="text-gray-600 text-center mb-6">
+                        High-yield anatomical concepts, clinical correlations, and visual learning aids. (Coming Soon)
+                    </p>
+                    <button disabled class="block w-full text-center bg-gray-400 text-white font-medium py-3 px-6 rounded-lg cursor-not-allowed">
+                        Coming Soon
+                    </button>
+                </div>
+
+                <div class="subject-card bg-white p-8 rounded-xl shadow-lg border border-gray-200">
+                     <div class="flex items-center justify-center h-16 w-16 bg-green-100 text-green-600 rounded-full mb-6 mx-auto">
+                        <svg class="h-8 w-8" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                           <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z" />
+                        </svg>
+                    </div>
+                    <h4 class="text-2xl font-semibold text-gray-700 mb-4 text-center">Physiology</h4>
+                    <p class="text-gray-600 text-center mb-6">
+                        Understand complex physiological processes with clear explanations and integrated concepts. (Coming Soon)
+                    </p>
+                     <button disabled class="block w-full text-center bg-gray-400 text-white font-medium py-3 px-6 rounded-lg cursor-not-allowed">
+                        Coming Soon
+                    </button>
+                </div>
+                
+                <div class="subject-card bg-white p-8 rounded-xl shadow-lg border border-gray-200">
+                     <div class="flex items-center justify-center h-16 w-16 bg-yellow-100 text-yellow-600 rounded-full mb-6 mx-auto">
+                        <svg class="h-8 w-8" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19.428 15.428a4.093 4.093 0 00-5.834-5.65M12 21a9 9 0 110-18 9 9 0 010 18zM12 9v3.75m0 3.75V12m0 3.75H9M12 16.5h3M12 7.5H9M12 7.5h3" />
+                        </svg>
+                    </div>
+                    <h4 class="text-2xl font-semibold text-gray-700 mb-4 text-center">Biochemistry</h4>
+                    <p class="text-gray-600 text-center mb-6">
+                        Master metabolic pathways, molecular biology, and genetic principles. (Coming Soon)
+                    </p>
+                     <button disabled class="block w-full text-center bg-gray-400 text-white font-medium py-3 px-6 rounded-lg cursor-not-allowed">
+                        Coming Soon
+                    </button>
+                </div>
+
+                <div class="subject-card bg-white p-8 rounded-xl shadow-lg border border-gray-200">
+                     <div class="flex items-center justify-center h-16 w-16 bg-red-100 text-red-600 rounded-full mb-6 mx-auto">
+                        <svg class="h-8 w-8" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                           <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M5 6h14M5 6V5m14 1V5m0 1v4.5M5 6v4.5m0 0l7-7 7 7M5 10.5V21" />
+                        </svg>
+                    </div>
+                    <h4 class="text-2xl font-semibold text-gray-700 mb-4 text-center">Pathology</h4>
+                    <p class="text-gray-600 text-center mb-6">
+                        General and systemic pathology, focusing on disease mechanisms and manifestations. (Coming Soon)
+                    </p>
+                     <button disabled class="block w-full text-center bg-gray-400 text-white font-medium py-3 px-6 rounded-lg cursor-not-allowed">
+                        Coming Soon
+                    </button>
+                </div>
+
+                <div class="subject-card bg-white p-8 rounded-xl shadow-lg border border-gray-200">
+                     <div class="flex items-center justify-center h-16 w-16 bg-purple-100 text-purple-600 rounded-full mb-6 mx-auto">
+                        <svg class="h-8 w-8" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                           <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 16c-3.31 0-6-2.69-6-6s2.69-6 6-6 6 2.69 6 6-2.69 6-6 6zm-1-10v4h2v-4h-2zm0 6h2v-2h-2v2z"/>
+                        </svg>
+                    </div>
+                    <h4 class="text-2xl font-semibold text-gray-700 mb-4 text-center">Microbiology</h4>
+                    <p class="text-gray-600 text-center mb-6">
+                        Bacteriology, virology, mycology, and parasitology with clinical relevance. (Coming Soon)
+                    </p>
+                     <button disabled class="block w-full text-center bg-gray-400 text-white font-medium py-3 px-6 rounded-lg cursor-not-allowed">
+                        Coming Soon
+                    </button>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section class="py-16 bg-white">
+        <div class="container mx-auto px-6">
+            <h3 class="text-3xl font-bold text-center text-gray-800 mb-12">Why Our Prep Hub?</h3>
+            <div class="grid md:grid-cols-3 gap-8">
+                <div class="feature-card bg-gray-50 p-8 rounded-xl shadow-lg">
+                    <div class="flex items-center justify-center h-16 w-16 bg-indigo-100 text-indigo-600 rounded-full mb-6 mx-auto">
+                        <svg class="h-8 w-8" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6.253v11.494m0 0A7.5 7.5 0 1012 6.253zM21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                        </svg>
+                    </div>
+                    <h4 class="text-xl font-semibold text-gray-700 mb-3 text-center">Interactive Learning</h4>
+                    <p class="text-gray-600 text-center">
+                        Engage with dynamic content and quizzes designed to reinforce high-yield information effectively.
+                    </p>
+                </div>
+                <div class="feature-card bg-gray-50 p-8 rounded-xl shadow-lg">
+                    <div class="flex items-center justify-center h-16 w-16 bg-indigo-100 text-indigo-600 rounded-full mb-6 mx-auto">
+                         <svg class="h-8 w-8" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.75 17L9 20l-1 1h8l-1-1-.75-3M3 13h18M5 17h14a2 2 0 002-2V5a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
+                        </svg>
+                    </div>
+                    <h4 class="text-xl font-semibold text-gray-700 mb-3 text-center">Expertly Curated Content</h4>
+                    <p class="text-gray-600 text-center">
+                        All materials are based on high-yield resources and tailored for USMLE Step 1 success.
+                    </p>
+                </div>
+                <div class="feature-card bg-gray-50 p-8 rounded-xl shadow-lg">
+                    <div class="flex items-center justify-center h-16 w-16 bg-indigo-100 text-indigo-600 rounded-full mb-6 mx-auto">
+                        <svg class="h-8 w-8" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
+                        </svg>
+                    </div>
+                    <h4 class="text-xl font-semibold text-gray-700 mb-3 text-center">Study Anywhere, Anytime</h4>
+                    <p class="text-gray-600 text-center">
+                        Our platform is fully responsive, allowing you to study on your desktop, tablet, or mobile device.
+                    </p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <footer class="bg-gray-800 text-white py-10">
+        <div class="container mx-auto px-6 text-center">
+            <p>&copy; <span id="currentYear"></span> Step 1 Hub. All rights reserved.</p>
+            <p class="text-sm text-gray-400 mt-2">Your Partner in USMLE Success.</p>
+        </div>
+    </footer>
+
+    <script>
+        document.getElementById('currentYear').textContent = new Date().getFullYear();
+
+        const mobileMenuButton = document.getElementById('mobileMenuButton');
+        const mobileMenu = document.getElementById('mobileMenu');
+
+        mobileMenuButton.addEventListener('click', () => {
+            mobileMenu.classList.toggle('hidden');
+        });
+    </script>
+
+</body>
+</html>
